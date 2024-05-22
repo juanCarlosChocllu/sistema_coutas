@@ -113,8 +113,12 @@ export class AutenticacionService {
 
 
 
-  findOne(id: number) {
-    return `This action returns a #${id} autenticacion`;
+   async findOne(id: string) {
+    const usuario = await this.UsuarioModel.findById(id).exec()
+    if(!usuario){
+      throw new NotFoundException()
+    }
+    return usuario ;
   }
 
   update(id: number, updateAutenticacionDto: UpdateAutenticacionDto) {

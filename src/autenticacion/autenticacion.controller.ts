@@ -5,6 +5,9 @@ import { CreateAutenticacionDto } from './dto/create-autenticacion.dto';
 import { UpdateAutenticacionDto } from './dto/update-autenticacion.dto';
 import { loginAutenticacionDto } from './dto/login-autenticacion.dto';
 import { PaginacionDto } from './dto/paginacion.usuarios.dto';
+import { tokenAutenticacionGuard } from './guards/token.autenticacion.guard';
+import { RolAutenticacionGuard } from './guards/rol.autenticacion.guard';
+
 
 @Controller('autenticacion')
 export class AutenticacionController {
@@ -19,10 +22,9 @@ export class AutenticacionController {
   login(@Body() loginAutenticacionDto:loginAutenticacionDto){
     return this.autenticacionService.login(loginAutenticacionDto)
   }
-
+  @UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
   @Get('listar/clientes')
   async findAllClientes(@Query() paginacionDto:PaginacionDto, @Req() request:Request<Express.Application>) { 
-    console.log(request['idUsuario']);
     return await this.autenticacionService.findAllClientes(paginacionDto);
   }
 
@@ -34,7 +36,7 @@ export class AutenticacionController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.autenticacionService.findOne(+id);
+    return this.autenticacionService.findOne(id);
   }
 
   @Patch(':id')
