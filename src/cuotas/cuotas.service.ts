@@ -14,6 +14,7 @@ export class CuotasService {
 
   async create(createCuotaDto: CreateCuotaDto) {
     createCuotaDto.montoPagar= (createCuotaDto.montoTotal / createCuotaDto.cantidadCoutas)
+    console.log(createCuotaDto);
     const cuota= await this.CuotaModel.create(createCuotaDto)    
     return  cuota.save() ;
   }

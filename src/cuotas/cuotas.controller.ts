@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, BadRequestException } from '@nestjs/common';
 import { CuotasService } from './cuotas.service';
 import { CreateCuotaDto } from './dto/create-cuota.dto';
 import { UpdateCuotaDto } from './dto/update-cuota.dto';
@@ -9,11 +9,18 @@ import { PaginacionDto } from './dto/paginacion.cuotas';
 export class CuotasController {
   constructor(private readonly cuotasService: CuotasService) {}
 
-  @Post('register')
-  create(@Body() createCuotaDto: CreateCuotaDto) {
-    createCuotaDto.usuario= new Types.ObjectId(createCuotaDto.usuario)
-    createCuotaDto.producto =new Types.ObjectId(createCuotaDto.producto)
-   return this.cuotasService.create(createCuotaDto);
+  @Post('register/:idUsuario/:idProdcuto')
+  create( @Param ('idUsuario') idUsuario:string , @Param('idProdcuto') idProdcuto:string , @Body()  createCuotaDto: CreateCuotaDto) {
+   try {
+    createCuotaDto.usuario= new Types.ObjectId(idUsuario)
+    createCuotaDto.producto =new Types.ObjectId(idProdcuto)
+    return this.cuotasService.create(createCuotaDto);
+   } catch (error) {
+      if(error){
+        throw new BadRequestException()
+      }
+    
+   }
   }
 
   @Get('listar')
