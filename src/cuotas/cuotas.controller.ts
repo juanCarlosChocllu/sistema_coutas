@@ -18,12 +18,18 @@ export class CuotasController {
 
   @Get('listar')
   findAll(@Query() paginacionDto:PaginacionDto) {
+    console.log('hola')
     return this.cuotasService.findAll(paginacionDto);
+  }
+  @Get('usuario/:id')
+  findCuotasPorUsuario(@Param('id') id: string){
+    return this.cuotasService.findCuotasPorUsuario(id)
+
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.cuotasService.findOne(+id);
+    return this.cuotasService.findOne(id);
   }
 
   @Patch(':id')

@@ -1,12 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCuotaDto } from './dto/create-cuota.dto';
 import { UpdateCuotaDto } from './dto/update-cuota.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cuota } from './schemas/cuota.schema';
-import { Model } from 'mongoose';
-import { count } from 'console';
+import { Model, Types } from 'mongoose';
 import { PaginacionDto } from './dto/paginacion.cuotas';
-import { constants } from 'buffer';
 import { Flag } from './enums/enum.cuotas';
 
 @Injectable()
@@ -36,7 +34,18 @@ export class CuotasService {
     } ;
   }
 
-  findOne(id: number) {
+  async findCuotasPorUsuario(id: string){
+    try {
+      const cuotasPorUsuario= await this.CuotaModel.find({usuario:new Types.ObjectId(id), flag:Flag.Nuevo}).exec()
+      return cuotasPorUsuario
+    } catch (error) {
+        if(error){
+          throw new BadRequestException('Usuario invalido')
+        }  
+    }
+  }
+
+  findOne(id: string) {
     return `This action returns a #${id} cuota`;
   }
 

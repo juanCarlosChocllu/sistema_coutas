@@ -20,10 +20,16 @@ export class AutenticacionController {
     return this.autenticacionService.login(loginAutenticacionDto)
   }
 
-  @Get('listar')
-  async findAll(@Query() paginacionDto:PaginacionDto, @Req() request:Request<Express.Application>) { 
+  @Get('listar/clientes')
+  async findAllClientes(@Query() paginacionDto:PaginacionDto, @Req() request:Request<Express.Application>) { 
     console.log(request['idUsuario']);
-    return await this.autenticacionService.findAll(paginacionDto);
+    return await this.autenticacionService.findAllClientes(paginacionDto);
+  }
+
+  @Get('listar/administradores')
+  async findAllAdministradores(@Query() paginacionDto:PaginacionDto, @Req() request:Request<Express.Application>) { 
+    console.log(request['idUsuario']);
+    return await this.autenticacionService.findAllAdministradores(paginacionDto);
   }
 
   @Get(':id')

@@ -6,7 +6,7 @@ export enum Genero {
    
 export enum Rol {
     cliente='Cliente' ,
-    Admin='Admin' 
+    Admin='Administrador' 
 }
 
 
