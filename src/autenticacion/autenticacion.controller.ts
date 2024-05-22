@@ -10,7 +10,7 @@ import { PaginacionDto } from './dto/paginacion.usuarios.dto';
 export class AutenticacionController {
   constructor(private readonly autenticacionService: AutenticacionService) {}
 
-  @Post('registrar')
+  @Post('create')
   create(@Body() createAutenticacionDto: CreateAutenticacionDto) {
     return this.autenticacionService.create(createAutenticacionDto);
   }
@@ -23,7 +23,6 @@ export class AutenticacionController {
   @Get('listar')
   async findAll(@Query() paginacionDto:PaginacionDto, @Req() request:Request<Express.Application>) { 
     console.log(request['idUsuario']);
-    
     return await this.autenticacionService.findAll(paginacionDto);
   }
 

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, Delete } from '@nestjs/common';
 import { CreateAutenticacionDto } from './dto/create-autenticacion.dto';
 import { UpdateAutenticacionDto } from './dto/update-autenticacion.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt'
 import { loginAutenticacionDto } from './dto/login-autenticacion.dto';
 import { PaginacionDto } from './dto/paginacion.usuarios.dto';
 import { Request } from 'express';
+import { Rol } from './enums/autenticacion.enum';
 
 
 @Injectable()
@@ -53,6 +54,7 @@ export class AutenticacionService {
        const token = this.jwtService.sign({id:usuario._id})
       const  resultado={
         success:true,
+        data:{rol:usuario.rol, nombre:usuario.nombres , apellidos: usuario.apellidos},
         token: token
     }
     return resultado
@@ -66,7 +68,7 @@ export class AutenticacionService {
     const limiteNumero= Number(limite) || 20
     const totalUsuarios= await this.UsuarioModel.countDocuments().exec()
     const totalPaginas = Math.ceil(totalUsuarios/ limiteNumero)
-    const filtrador:any={}
+    const filtrador:any={rol:Rol.cliente}
     if(buscar){
       filtrador.$or=[
         {cedulaIdentidad:{$regex:buscar, $options:'i'}},
