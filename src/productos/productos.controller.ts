@@ -13,14 +13,7 @@ export class ProductosController {
 
   @Post('create')
   async create(@Body() createProductoDto: CreateProductoDto) {
-        const producto= await this.productosService.create(createProductoDto)
-        producto.save()
-        const resultado={
-          data:true,
-          producto: producto
-          
-        }
-    return resultado ;
+    return await this.productosService.create(createProductoDto);
   }
 
   @Get('listar')
@@ -30,12 +23,12 @@ export class ProductosController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.productosService.findOne(+id);
+    return this.productosService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductoDto: UpdateProductoDto) {
-    return this.productosService.update(+id, updateProductoDto);
+    return this.productosService.update(id, updateProductoDto);
   }
 
   @Delete(':id')

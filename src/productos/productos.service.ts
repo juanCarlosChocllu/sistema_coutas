@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpCode, Injectable, NotFoundException , HttpStatus} from '@nestjs/common';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { InjectModel} from '@nestjs/mongoose';
 import { Producto } from './schemas/producto.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Flag } from './enums/productos.enum';
 import { PaginacionDto } from './dto/paginacion-producto.dto';
 @Injectable()
@@ -19,7 +19,7 @@ export class ProductosService {
   async findAll(paginacionDto:PaginacionDto) {
     const {pagina, limite, buscar}= paginacionDto
     const paginaNumber= Number(pagina) || 1
-    const limiteNumber = Number(limite) || 10
+    const limiteNumber = Number(limite) || 20
     const filtrador:any={flag:Flag.Nuevo}
 
     if(buscar){
@@ -39,19 +39,47 @@ export class ProductosService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} producto`;
+  async  findOne(id: string) {
+      try {
+        const producto= await this.ProductoModel.findById(new Types.ObjectId(id)).exec()  
+        if(!producto){
+          
+          throw new NotFoundException()
+        }
+        return this.ProductoModel.findById(new Types.ObjectId(id)).exec()
+      } catch (error) {
+        throw new NotFoundException()    
+      }
   }
 
-  update(id: number, updateProductoDto: UpdateProductoDto) {
-    return `This action updates a #${id} producto`;
+  async update(id: string, updateProductoDto: UpdateProductoDto) {
+    try {
+      const producto= await this.ProductoModel.findById(new Types.ObjectId(id)).exec()
+      if(!producto){
+        throw new NotFoundException()
+      }
+      return await this.ProductoModel.findByIdAndUpdate(new Types.ObjectId(id), updateProductoDto,{new:true})
+      
+    } catch (error) {
+      throw new NotFoundException()
+      
+      
+    }
   }
 
    async softDelete(id: string) {
-    const producto = await this.ProductoModel.findOne({_id:id, flag: Flag.Nuevo}).exec()
-    if(!producto){
-      throw new NotFoundException('El producto no existe')
-    }
-    return await this.ProductoModel.updateOne({_id:id},{flag: Flag.Eliminado}) ;
+     try {
+      const producto = await this.ProductoModel.findOne({_id:new Types.ObjectId(id), flag: Flag.Nuevo}).exec()    
+      if(!producto){
+        throw new NotFoundException()
+      }
+      
+     await this.ProductoModel.updateOne({_id: new Types.ObjectId(id)},{flag: Flag.Eliminado});
+      return {
+        statusCode:HttpStatus.OK
+      }
+     } catch (error) {
+        throw new NotFoundException()
+     }
   }
 }

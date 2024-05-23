@@ -10,7 +10,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class CuotasController {
   constructor(private readonly cuotasService: CuotasService) {}
 
-  @Post('register/:idUsuario/:idProdcuto')
+  @Post('create/:idUsuario/:idProdcuto')
   create( @Param ('idUsuario') idUsuario:string , @Param('idProdcuto') idProdcuto:string , @Body()  createCuotaDto: CreateCuotaDto) {
    try {
     createCuotaDto.usuario= new Types.ObjectId(idUsuario)
