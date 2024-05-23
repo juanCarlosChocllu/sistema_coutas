@@ -3,13 +3,14 @@ import { CreateAutenticacionDto } from './dto/create-autenticacion.dto';
 import { UpdateAutenticacionDto } from './dto/update-autenticacion.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Usuario } from './schemas/autenticacion.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import {JwtService} from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import { loginAutenticacionDto } from './dto/login-autenticacion.dto';
 import { PaginacionDto } from './dto/paginacion.usuarios.dto';
 import { Request } from 'express';
 import { Flag, IsActive, Rol } from './enums/autenticacion.enum';
+import { Type } from 'class-transformer';
 
 
 @Injectable()
@@ -121,11 +122,47 @@ export class AutenticacionService {
     return usuario ;
   }
 
-  update(id: number, updateAutenticacionDto: UpdateAutenticacionDto) {
+
+  async findOneCliente(id:string){
+   try {
+    const cliente= await this.UsuarioModel.findById( new Types.ObjectId(id)).exec()
+    if(!cliente){
+      throw new NotFoundException()
+    }
+    return cliente
+   } catch (error) {
+    throw new NotFoundException()
+    
+   }
+
+  }
+
+  update(id: string, updateAutenticacionDto: UpdateAutenticacionDto) {
     return `This action updates a #${id} autenticacion`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} autenticacion`;
+  async softDelele(id: string) {
+    try {
+      const cliente= await this.UsuarioModel.findById(new Types.ObjectId(id)).exec()
+      if(!cliente){
+        throw new NotFoundException()
+      }
+    return await this.UsuarioModel.updateOne({_id:new Types.ObjectId(id)},{flag: Flag.Eliminado})
+    } catch (error) {
+      throw new NotFoundException()
+      
+    }
+  }
+
+  async desactivarCuenta(id:string){
+    try{
+    const usuario= await this.UsuarioModel.findById(new Types.ObjectId(id)).exec()
+    if(!usuario){
+      throw new NotFoundException()
+    }
+  return await this.UsuarioModel.updateOne({_id:new Types.ObjectId(id)},{is_active:IsActive.Inactivo})
+  } catch (error) {
+    throw new NotFoundException() 
+  }
   }
 }

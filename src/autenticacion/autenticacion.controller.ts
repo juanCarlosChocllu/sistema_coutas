@@ -35,18 +35,26 @@ export class AutenticacionController {
     return await this.autenticacionService.findAllAdministradores(paginacionDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.autenticacionService.findOne(id);
+  @Get('cliente/:id')
+  async findOne(@Param('id') id: string) {
+    return await this.autenticacionService.findOneCliente(id)
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAutenticacionDto: UpdateAutenticacionDto) {
-    return this.autenticacionService.update(+id, updateAutenticacionDto);
+    return this.autenticacionService.update(id, updateAutenticacionDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.autenticacionService.remove(+id);
+  @Delete('eliminar/:id')
+  softDelte(@Param('id') id: string) {
+    return this.autenticacionService.softDelele(id);
   }
+
+  @Delete('desactivar/cuenta/:id')
+  desactivarCuenta(@Param('id') id: string) {
+    return this.autenticacionService.desactivarCuenta(id);
+  }
+
+
+
 }

@@ -16,9 +16,6 @@ export class Pago {
     montoPagado:number
 
     @Prop()
-    imagenQr:string
-
-    @Prop()
     cantidadCoutasPagadas:number
 
     @Prop({enum:EstadoPago, default:EstadoPago.Pendiendte})
