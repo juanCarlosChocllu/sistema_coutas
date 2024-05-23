@@ -40,7 +40,7 @@ export class AutenticacionController {
     return await this.autenticacionService.findOneCliente(id)
   }
 
-  @Patch(':id')
+  @Patch('actualizar/:id')
   update(@Param('id') id: string, @Body() updateAutenticacionDto: UpdateAutenticacionDto) {
     return this.autenticacionService.update(id, updateAutenticacionDto);
   }

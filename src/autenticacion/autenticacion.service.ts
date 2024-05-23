@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException, Delete } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, HttpStatus } from '@nestjs/common';
 import { CreateAutenticacionDto } from './dto/create-autenticacion.dto';
 import { UpdateAutenticacionDto } from './dto/update-autenticacion.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,10 +8,7 @@ import {JwtService} from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import { loginAutenticacionDto } from './dto/login-autenticacion.dto';
 import { PaginacionDto } from './dto/paginacion.usuarios.dto';
-import { Request } from 'express';
 import { Flag, IsActive, Rol } from './enums/autenticacion.enum';
-import { Type } from 'class-transformer';
-
 
 @Injectable()
 export class AutenticacionService {
@@ -137,9 +134,28 @@ export class AutenticacionService {
 
   }
 
-  update(id: string, updateAutenticacionDto: UpdateAutenticacionDto) {
-    return `This action updates a #${id} autenticacion`;
+  async update(id: string, updateAutenticacionDto: UpdateAutenticacionDto) {
+    
+    try {
+      const usuario=await this.UsuarioModel.findById(new Types.ObjectId(id)).exec()
+      if(!usuario){
+        throw new NotFoundException()
+
+      }
+
+      await this.UsuarioModel.findByIdAndUpdate({_id:new Types.ObjectId(id)},updateAutenticacionDto, {new:true})
+     return {
+      statusCode: HttpStatus.OK
+     }
+    } catch (error) {
+      throw new NotFoundException()
+      
+    }
+  
+    
   }
+
+  
 
   async softDelele(id: string) {
     try {
