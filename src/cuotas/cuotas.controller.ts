@@ -4,7 +4,8 @@ import { CreateCuotaDto } from './dto/create-cuota.dto';
 import { UpdateCuotaDto } from './dto/update-cuota.dto';
 import { Types } from 'mongoose';
 import { PaginacionDto } from './dto/paginacion.cuotas';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('cuotas')
 @Controller('cuotas')
 export class CuotasController {
   constructor(private readonly cuotasService: CuotasService) {}

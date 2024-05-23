@@ -7,8 +7,9 @@ import { loginAutenticacionDto } from './dto/login-autenticacion.dto';
 import { PaginacionDto } from './dto/paginacion.usuarios.dto';
 import { tokenAutenticacionGuard } from './guards/token.autenticacion.guard';
 import { RolAutenticacionGuard } from './guards/rol.autenticacion.guard';
+import { ApiTags } from '@nestjs/swagger';
 
-
+@ApiTags('autenticacion')
 @Controller('autenticacion')
 export class AutenticacionController {
   constructor(private readonly autenticacionService: AutenticacionService) {}

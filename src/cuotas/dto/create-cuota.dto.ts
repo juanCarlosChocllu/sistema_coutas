@@ -1,6 +1,7 @@
 import { Types } from "mongoose"
 
 export class CreateCuotaDto {
+    
     producto:Types.ObjectId
     
     usuario:Types.ObjectId
