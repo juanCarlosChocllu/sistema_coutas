@@ -9,7 +9,14 @@ export class ProductosController {
 
   @Post('create')
   async create(@Body() createProductoDto: CreateProductoDto) {
-    return await this.productosService.create(createProductoDto);
+        const producto= await this.productosService.create(createProductoDto)
+        producto.save()
+        const resultado={
+          data:true,
+          producto: producto
+          
+        }
+    return resultado ;
   }
 
   @Get('listar')

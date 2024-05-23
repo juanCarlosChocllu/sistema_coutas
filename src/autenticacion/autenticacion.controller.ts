@@ -22,7 +22,7 @@ export class AutenticacionController {
   login(@Body() loginAutenticacionDto:loginAutenticacionDto){
     return this.autenticacionService.login(loginAutenticacionDto)
   }
-  @UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
+  //@UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
   @Get('listar/clientes')
   async findAllClientes(@Query() paginacionDto:PaginacionDto, @Req() request:Request<Express.Application>) { 
     return await this.autenticacionService.findAllClientes(paginacionDto);
