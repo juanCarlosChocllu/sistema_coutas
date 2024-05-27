@@ -5,8 +5,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Cuota } from './schemas/cuota.schema';
 import { Model, Types } from 'mongoose';
 import { PaginacionDto } from './dto/paginacion.cuotas';
-import { EstadoCouta, Flag } from './enums/enum.cuotas';
-import { Pago, PagosSchema } from 'src/pagos/schemas/pago.schema';
+import { EstadoCuota, Flag } from './enums/enum.cuotas';
+import { Pago} from 'src/pagos/schemas/pago.schema';
 import { EstadoPago } from 'src/pagos/enums/pago.enum';
 
 @Injectable()
@@ -28,7 +28,8 @@ export class CuotasService {
       usuario:createCuotaDto.usuario,
       cuotas:cuota._id,
       fechaPago: fechaVencimiento.setMonth(fechaVencimiento.getMonth() + contador),
-      totalPagado: cuota.montoPagar
+      totalPagado: cuota.montoPagar,
+      numeroDeCuota:contador + 1
     }
     )
     await pagos.save()
@@ -77,12 +78,22 @@ export class CuotasService {
 
 
   async vericarCuotaCompletada(pagos:string[], usuario:Types.ObjectId){  
-   const  cuotasPagada = await this.CuotaModel.find({usuario:usuario}).exec()
+   const  cuotas = await this.CuotaModel.find({usuario:usuario}).exec()
+  for (const cuota of cuotas){
+    let totalCuota= 0
+   const cuotasPagadas = await  this.PagosMoldel.find({estadoPago:EstadoPago.Pagado, cuotas:cuota._id})
+    for (const total of cuotasPagadas){
+         totalCuota  +=  total.totalPagado 
+    }
+     const verificaTotalPagado= await this.CuotaModel.findById(cuota._id)
+     if(verificaTotalPagado.montoTotal === totalCuota){
+        await this.CuotaModel.findByIdAndUpdate(cuota.id, {estadoCouta:EstadoCuota.Pagado})
+     }
+      
+  }
 
-    
 
-    const cuotasPagadas = await  this.PagosMoldel.find({estadoPago:EstadoPago.Pagado})
-    
+ 
 
     
    

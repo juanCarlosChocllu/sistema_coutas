@@ -15,6 +15,9 @@ export class CreatePagoDto {
     idPago:Types.ObjectId[]=[]
 
     @IsOptional()
+    numeroDeCuota:number
+
+    @IsOptional()
     usuarioResponsablePago:Types.ObjectId
    
 }

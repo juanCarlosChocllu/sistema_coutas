@@ -3,7 +3,7 @@ export enum Flag {
     Eliminado='Eliminado' 
 }
 
-export enum EstadoCouta{
+export enum EstadoCuota{
     Pendiente='Pendiente',
     Pagado='Pagado'
 }

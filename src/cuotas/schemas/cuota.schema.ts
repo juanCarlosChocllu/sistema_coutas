@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory , } from '@nestjs/mongoose';
-import { EstadoCouta, Flag } from '../enums/enum.cuotas';
+import { EstadoCuota, Flag } from '../enums/enum.cuotas';
 import { Types } from 'mongoose';
 
 @Schema()
@@ -25,7 +25,7 @@ export class Cuota {
     @Prop({default:Date.now})
     fechaDePago:Date
 
-    @Prop({enum:EstadoCouta, default:EstadoCouta.Pendiente})
+    @Prop({enum:EstadoCuota, default:EstadoCuota.Pendiente})
     estadoCouta:string
 
     @Prop({enum:Flag, default:Flag.Nuevo})

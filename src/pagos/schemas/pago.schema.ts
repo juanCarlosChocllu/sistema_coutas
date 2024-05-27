@@ -18,7 +18,7 @@ export class Pago {
     montoPagado:number
 
     @Prop({default:0})
-    cantidadCuotasPagadas:number
+    numeroDeCuota:number
 
     @Prop({default:0})
     totalPagado:number

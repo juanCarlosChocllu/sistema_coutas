@@ -4,7 +4,6 @@ import { UpdatePagoDto } from './dto/update-pago.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Pago } from './schemas/pago.schema';
 import { Model, Types } from 'mongoose';
-import { EstadoCouta, Flag } from 'src/cuotas/enums/enum.cuotas';
 import { EstadoPago } from './enums/pago.enum';
 
 import {CuotasService } from '../cuotas/cuotas.service'
@@ -25,21 +24,16 @@ export class PagosService {
  
    const pagosPendientes=  await this.buscarPagosNoPendientes(createPagoDto.idPago, createPagoDto.usuario)
    for(const cuota of pagosPendientes){
-      
+    console.log(cuota);
+    
          const cuotaApagar= await this.PagosModel.findByIdAndUpdate({
             _id:cuota._id
-          }, {estadoPago:EstadoPago.Pagado}, {new:true}).exec()
-         
+          }, {estadoPago:EstadoPago.Pagado}, {new:true}).exec()     
          cuotasPagadas = cuotasPagadas.concat(cuotaApagar)
       }    
-        console.log(cuotasPagadas);
-        
+      
       this.cuotasService.vericarCuotaCompletada(cuotasPagadas, createPagoDto.usuario)
-
       return cuotasPagadas
-     
-  
-    
   }
 
  async  buscarPagosNoPendientes(idPagos:Types.ObjectId[], usuario:Types.ObjectId){

@@ -3,11 +3,11 @@ import { Types } from "mongoose"
 
 export class CreateCuotaDto {
 
-    @IsNotEmpty({message:'Este campo es obligatorio'})
-    @IsString()
+   
+    @IsOptional()
     producto:Types.ObjectId
     
-    @IsNotEmpty({message:'Este campo es obligatorio'})
+    @IsOptional()
     usuario:Types.ObjectId
 
     @IsNotEmpty({message:'Este campo es obligatorio'})

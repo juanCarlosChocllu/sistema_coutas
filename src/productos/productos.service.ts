@@ -21,7 +21,6 @@ export class ProductosService {
     const paginaNumber= Number(pagina) || 1
     const limiteNumber = Number(limite) || 20
     const filtrador:any={flag:Flag.Nuevo}
-
     if(buscar){
       filtrador.$or=[
         {nombreProducto:{$regex:buscar, $options:'i'}},
