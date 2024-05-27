@@ -1,5 +1,5 @@
 
 export enum EstadoPago{
-    Pendiendte='Pendiente',
+    Pendiente='Pendiente',
     Pagado='Pagado'
 }

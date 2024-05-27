@@ -1,23 +1,94 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePagoDto } from './dto/create-pago.dto';
 import { UpdatePagoDto } from './dto/update-pago.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Pago } from './schemas/pago.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
+import { EstadoCouta, Flag } from 'src/cuotas/enums/enum.cuotas';
+import { EstadoPago } from './enums/pago.enum';
+
+import {CuotasService } from '../cuotas/cuotas.service'
 
 @Injectable()
 export class PagosService {
 
-  constructor(@InjectModel(Pago.name) private PagosModel:Model<Pago>){}
+  constructor(
+    @InjectModel(Pago.name) private PagosModel:Model<Pago>,
+    private  cuotasService:CuotasService
+    
+){}
 
   
-  create(createPagoDto: CreatePagoDto) {
-    return 'This action adds a new pago';
+  async createPago(createPagoDto: CreatePagoDto) {
+    
+    let cuotasPagadas=[]
+ 
+   const pagosPendientes=  await this.buscarPagosNoPendientes(createPagoDto.idPago, createPagoDto.usuario)
+   for(const cuota of pagosPendientes){
+      
+         const cuotaApagar= await this.PagosModel.findByIdAndUpdate({
+            _id:cuota._id
+          }, {estadoPago:EstadoPago.Pagado}, {new:true}).exec()
+         
+         cuotasPagadas = cuotasPagadas.concat(cuotaApagar)
+      }    
+        console.log(cuotasPagadas);
+        
+      this.cuotasService.vericarCuotaCompletada(cuotasPagadas, createPagoDto.usuario)
+
+      return cuotasPagadas
+     
+  
+    
   }
 
-  findAll() {
-    return `This action returns all pagos`;
+ async  buscarPagosNoPendientes(idPagos:Types.ObjectId[], usuario:Types.ObjectId){
+  
+  let pagosPendientes =[]
+     for(const id of idPagos){            
+      const pagosPendientesModel= await this.PagosModel.find({
+        _id: new Types.ObjectId(id),
+        usuario:usuario,
+        estadoPago:EstadoPago.Pendiente
+      }).exec()
+  
+    pagosPendientes = pagosPendientes.concat(pagosPendientesModel)
+     }     
+     
+     
+    return pagosPendientes
   }
+  
+  findAll() {
+    return this.PagosModel.find();
+  }
+
+  async findAllPagadosCliente(id:string){
+    try {
+      const pagadosPorCliente = await this.PagosModel.find({usuario:new Types.ObjectId(id), estadoPago:EstadoPago.Pagado}).exec()
+      return pagadosPorCliente
+    } catch (error) {
+       throw new NotFoundException()
+      
+    }
+  }
+
+  async findAllPendientesCliente(id:string){   
+    try {
+      const pendientePorCliente = await this.PagosModel.find(
+        {usuario:new Types.ObjectId(id),
+           estadoPago:EstadoPago.Pendiente
+            
+          }
+          ).exec()
+      return pendientePorCliente
+    } catch (error) {
+       throw new NotFoundException()
+      
+    }
+  }
+
+
 
   findOne(id: number) {
     return `This action returns a #${id} pago`;

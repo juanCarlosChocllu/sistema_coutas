@@ -4,6 +4,7 @@ import {MongooseModule} from '@nestjs/mongoose'
 import { ProductosModule } from './productos/productos.module';
 import { CuotasModule } from './cuotas/cuotas.module';
 import { PagosModule } from './pagos/pagos.module';
+import { GastosModule } from './gastos/gastos.module';
 
 
 @Module({
@@ -11,7 +12,8 @@ import { PagosModule } from './pagos/pagos.module';
   ,AutenticacionModule,
    ProductosModule,
    CuotasModule,
-   PagosModule],
+   PagosModule,
+   GastosModule],
   controllers: [],
   providers: [],
 })

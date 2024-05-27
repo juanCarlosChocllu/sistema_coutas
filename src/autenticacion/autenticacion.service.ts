@@ -89,7 +89,7 @@ export class AutenticacionService {
     const paginaNumero= Number(pagina) || 1
     const limiteNumero= Number(limite) || 20
   
-    const filtrador:any={rol:Rol.Admin}
+    const filtrador:any={rol:Rol.Admin, is_active:IsActive.Activo, flag:Flag.Nuevo}
     if(buscar){
       filtrador.$or=[
         {cedulaIdentidad:{$regex:buscar, $options:'i'}},

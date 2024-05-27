@@ -18,6 +18,12 @@ export class Cuota {
 
     @Prop()
     montoPagar:number
+    
+    @Prop()
+    TotalPagado:number
+
+    @Prop({default:Date.now})
+    fechaDePago:Date
 
     @Prop({enum:EstadoCouta, default:EstadoCouta.Pendiente})
     estadoCouta:string

@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, NotFoundException } from '@nestjs/common';
 import { PagosService } from './pagos.service';
 import { CreatePagoDto } from './dto/create-pago.dto';
 import { UpdatePagoDto } from './dto/update-pago.dto';
 import { ApiTags } from '@nestjs/swagger';
-
+import { Types } from 'mongoose';
+import { Type } from 'class-transformer';
 
 
 @ApiTags('pagos')
@@ -11,14 +12,26 @@ import { ApiTags } from '@nestjs/swagger';
 export class PagosController {
   constructor(private readonly pagosService: PagosService) {}
 
-  @Post('register')
-  create(@Body() createPagoDto: CreatePagoDto) {
-    return this.pagosService.create(createPagoDto);
+  @Post('create/:idUsuario')
+  async createPago(@Body() createPagoDto: CreatePagoDto,@Param('idUsuario') usuario:string) {
+   try {    
+    const idPrueba='664bad54b59b2a83065c7ac3'
+     createPagoDto.usuario= new Types.ObjectId(usuario)
+     createPagoDto.usuarioResponsablePago= new Types.ObjectId(idPrueba)
+    return await this.pagosService.createPago(createPagoDto);
+   } catch (error) {     
+      throw new NotFoundException(error.message)    
+   }
   }
 
-  @Get('listar')
-  findAll() {
-    return this.pagosService.findAll();
+  @Get('pagados/listar/:idCliente')
+  findAllPagadosCliente(@Param('idCliente') idCliente:string) {    
+    return this.pagosService.findAllPagadosCliente(idCliente);
+  }
+
+  @Get('pendientes/listar/:idCliente')
+  findAllPendientesCliente(@Param('idCliente') idCliente:string) {  
+    return this.pagosService.findAllPendientesCliente(idCliente);
   }
 
   @Get(':id')

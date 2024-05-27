@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory , } from '@nestjs/mongoose';
-import { Type } from 'class-transformer';
 import { Types } from 'mongoose';
 import { EstadoPago } from '../enums/pago.enum';
 
@@ -10,7 +9,7 @@ export class Pago {
     cuotas:Types.ObjectId
 
     @Prop({type: Types.ObjectId, ref:'Usuario'})//para verificar con que admin se iso el pago
-    usuario= Types.ObjectId
+    usuario:Types.ObjectId
 
     @Prop({type: Types.ObjectId, ref:'Usuario'})
     usuarioResponsablePago:Types.ObjectId
@@ -19,9 +18,13 @@ export class Pago {
     montoPagado:number
 
     @Prop({default:0})
-    cantidadCoutasPagadas:number
+    cantidadCuotasPagadas:number
 
-    @Prop({enum:EstadoPago, default:EstadoPago.Pendiendte})
+    @Prop({default:0})
+    totalPagado:number
+
+
+    @Prop({enum:EstadoPago, default:EstadoPago.Pendiente})
     estadoPago:string
     
     @Prop({ default:Date.now})

@@ -12,7 +12,7 @@ export class CreateProductoDto {
     precio:Number
     
     @IsNotEmpty({message:'Este campo es obligatorio'})
-    @IsString()
+    @IsString({message:'Este campo deve ser de tipo texto'})
     descripcion:String
     
 }
