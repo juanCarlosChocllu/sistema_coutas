@@ -16,7 +16,7 @@ export class CreateCuotaDto {
 
     @IsNotEmpty({message:'Este campo es obligatorio'})
     @IsNumber({},{message:'Este campo es numerico'})
-    cantidadCoutas:number
+    cantidadCuotas:number
     
     @IsNotEmpty({message:'Este campo es obligatorio'})
     @IsDateString({},{ message: 'La fecha de pago es requerida' })

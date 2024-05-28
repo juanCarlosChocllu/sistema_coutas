@@ -19,10 +19,10 @@ export class CuotasService {
 
 
  async create(createCuotaDto: CreateCuotaDto) {
-    createCuotaDto.montoPagar= (createCuotaDto.montoTotal / createCuotaDto.cantidadCoutas)  
+    createCuotaDto.montoPagar= (createCuotaDto.montoTotal / createCuotaDto.cantidadCuotas)  
    const cuota= await this.CuotaModel.create(createCuotaDto)
    await cuota.save()  
-   for(let contador =0; contador < createCuotaDto.cantidadCoutas; contador ++ ){
+   for(let contador =0; contador < createCuotaDto.cantidadCuotas; contador ++ ){
     const fechaVencimiento = new Date(createCuotaDto.fechaDePago)
     const pagos= await this.PagosMoldel.create({
       usuario:createCuotaDto.usuario,
