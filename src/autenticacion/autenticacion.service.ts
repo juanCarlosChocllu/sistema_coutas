@@ -65,7 +65,7 @@ export class AutenticacionService {
     const paginaNumero= Number(pagina) || 1
     const limiteNumero= Number(limite) || 20
 
-    const filtrador:any={rol:Rol.cliente}
+    const filtrador:any={rol:Rol.cliente, is_active:IsActive.Activo, flag:Flag.Nuevo}
     if(buscar){
       filtrador.$or=[
         {cedulaIdentidad:{$regex:buscar, $options:'i'}},
@@ -101,6 +101,7 @@ export class AutenticacionService {
     const administradores =await this.UsuarioModel.find(filtrador)
     .skip((paginaNumero - 1) * limiteNumero)
     .limit(limiteNumero)
+    .sort({createdAt:-1})
     .exec()
     return {
       data:administradores,
@@ -108,7 +109,6 @@ export class AutenticacionService {
     };
     
   }
-
 
 
    async findOne(id: string) {

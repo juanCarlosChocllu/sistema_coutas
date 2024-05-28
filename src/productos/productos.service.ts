@@ -31,6 +31,7 @@ export class ProductosService {
     const productos = await this.ProductoModel.find(filtrador)
       .skip((paginaNumber -1) * limiteNumber)
       .limit(limiteNumber)
+      .sort({createdAt:-1})
       .exec()
     return  {
         productos: productos,

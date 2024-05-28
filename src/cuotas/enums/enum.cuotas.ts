@@ -5,5 +5,5 @@ export enum Flag {
 
 export enum EstadoCuota{
     Pendiente='Pendiente',
-    Pagado='Pagado'
+    Pagado='Completado'
 }

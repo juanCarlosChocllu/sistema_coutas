@@ -59,22 +59,22 @@ export class PagosService {
 
   async findAllPagadosCliente(id:string){
     try {
-      const pagadosPorCliente = await this.PagosModel.find({usuario:new Types.ObjectId(id), estadoPago:EstadoPago.Pagado}).exec()
+      const pagadosPorCliente = await this.PagosModel.find(
+        {usuario:new Types.ObjectId(id)}
+      ).sort({numeroDeCuota: -1} ).exec()
       return pagadosPorCliente
     } catch (error) {
        throw new NotFoundException()
-      
     }
   }
 
+
+ 
   async findAllPendientesCliente(id:string){   
     try {
       const pendientePorCliente = await this.PagosModel.find(
         {usuario:new Types.ObjectId(id),
-           estadoPago:EstadoPago.Pendiente
-            
-          }
-          ).exec()
+    estadoPago:EstadoPago.Pendiente}).exec()
       return pendientePorCliente
     } catch (error) {
        throw new NotFoundException()

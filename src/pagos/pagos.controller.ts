@@ -24,10 +24,12 @@ export class PagosController {
    }
   }
 
-  @Get('pagados/listar/:idCliente')
+  @Get('listar/:idCliente')
   findAllPagadosCliente(@Param('idCliente') idCliente:string) {    
     return this.pagosService.findAllPagadosCliente(idCliente);
   }
+
+
 
   @Get('pendientes/listar/:idCliente')
   findAllPendientesCliente(@Param('idCliente') idCliente:string) {  
