@@ -8,6 +8,8 @@ import { PaginacionDto } from './dto/paginacion.usuarios.dto';
 import { tokenAutenticacionGuard } from './guards/token.autenticacion.guard';
 import { RolAutenticacionGuard } from './guards/rol.autenticacion.guard';
 import { ApiTags } from '@nestjs/swagger';
+import { Roles } from './decorators/roles.decorators';
+import { Rol } from './enums/autenticacion.enum';
 
 @ApiTags('autenticacion')
 @Controller('autenticacion')
@@ -23,7 +25,8 @@ export class AutenticacionController {
   login(@Body() loginAutenticacionDto:loginAutenticacionDto){
     return this.autenticacionService.login(loginAutenticacionDto)
   }
-  //@UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
+  @UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
+  @Roles([Rol.Admin])
   @Get('listar/clientes')
   async findAllClientes(@Query() paginacionDto:PaginacionDto, @Req() request:Request<Express.Application>) { 
     return await this.autenticacionService.findAllClientes(paginacionDto);

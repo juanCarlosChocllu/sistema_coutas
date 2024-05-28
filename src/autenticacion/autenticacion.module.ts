@@ -5,19 +5,20 @@ import {MongooseModule} from '@nestjs/mongoose'
 import { Usuario, UsuarioSchema } from './schemas/autenticacion.schema';
 import {jwtConstants} from './constants/autenticacion.constants'
 import { JwtModule } from '@nestjs/jwt';
-
+import { RolAutenticacionGuard } from './guards/rol.autenticacion.guard';
+import { tokenAutenticacionGuard } from './guards/token.autenticacion.guard';
 @Module({
-  imports :[ 
-    JwtModule.register({
-      global:true,
-      secret: jwtConstants.secret,
-      signOptions:{expiresIn:'5h'}
-    }),
-
+  imports :[
     MongooseModule.forFeature(
-      [{name:Usuario.name, schema:UsuarioSchema}])
+      [{name:Usuario.name, schema:UsuarioSchema}]),
+      JwtModule.register({
+        global:true,
+        secret: jwtConstants.secret,
+        signOptions:{expiresIn:'5h'}
+      }),
   ],
   controllers: [AutenticacionController],
-  providers: [AutenticacionService],
+  providers: [AutenticacionService, RolAutenticacionGuard, tokenAutenticacionGuard],
+  exports :[RolAutenticacionGuard, tokenAutenticacionGuard]
 })
 export class AutenticacionModule {}

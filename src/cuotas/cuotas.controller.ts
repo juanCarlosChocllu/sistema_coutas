@@ -1,11 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, BadRequestException, UseGuards } from '@nestjs/common';
 import { CuotasService } from './cuotas.service';
 import { CreateCuotaDto } from './dto/create-cuota.dto';
 import { UpdateCuotaDto } from './dto/update-cuota.dto';
 import { Types } from 'mongoose';
 import { PaginacionDto } from './dto/paginacion.cuotas';
 import { ApiTags } from '@nestjs/swagger';
+import { tokenAutenticacionGuard } from 'src/autenticacion/guards/token.autenticacion.guard';
+import { RolAutenticacionGuard } from 'src/autenticacion/guards/rol.autenticacion.guard';
+import { rootCertificates } from 'tls';
+
 @ApiTags('cuotas')
+@UseGuards(tokenAutenticacionGuard)
 @Controller('cuotas')
 export class CuotasController {
   constructor(private readonly cuotasService: CuotasService) {}

@@ -55,7 +55,9 @@ export class CuotasService {
 
   async findCuotasPorUsuario(id: string){
     try {
-      const cuotasPorUsuario= await this.CuotaModel.find({usuario:new Types.ObjectId(id), flag:Flag.Nuevo}).exec()
+      const cuotasPorUsuario= await this.CuotaModel.find(
+        {usuario:new Types.ObjectId(id), flag:Flag.Nuevo}
+      ).exec()  
       return cuotasPorUsuario
     } catch (error) {
         if(error){

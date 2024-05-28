@@ -2,13 +2,15 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { GastosService } from './gastos.service';
 import { CreateGastoDto } from './dto/create-gasto.dto';
 import { UpdateGastoDto } from './dto/update-gasto.dto';
+import { Types } from 'mongoose';
 
 @Controller('gastos')
 export class GastosController {
   constructor(private readonly gastosService: GastosService) {}
 
-  @Post()
-  create(@Body() createGastoDto: CreateGastoDto) {
+  @Post('create/:idUsuario')
+  create(@Body() createGastoDto: CreateGastoDto , @Param('idUsuario') usuario:Types.ObjectId) {
+    createGastoDto.usuario= new Types.ObjectId(usuario)
     return this.gastosService.create(createGastoDto);
   }
 
@@ -17,9 +19,9 @@ export class GastosController {
     return this.gastosService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.gastosService.findOne(+id);
+  @Get('listar/:idUsuario')
+  findOneAll(@Param('idUsuario') id: Types.ObjectId) {
+    return this.gastosService.findOneAll(id);
   }
 
   @Patch(':id')
