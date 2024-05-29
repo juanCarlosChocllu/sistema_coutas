@@ -57,7 +57,7 @@ export class PagosService {
   async findAllPagadosCliente(id:string){
     try {
       const pagadosPorCliente = await this.PagosModel.find(
-        {usuario:new Types.ObjectId(id)}
+        {usuario:new Types.ObjectId(id), estadoPago:EstadoPago.Pendiente}
       ).sort({numeroDeCuota: -1} ).exec()
       return pagadosPorCliente
     } catch (error) {
