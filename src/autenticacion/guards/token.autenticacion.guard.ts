@@ -10,7 +10,6 @@ export class  tokenAutenticacionGuard implements CanActivate{
     async canActivate(context: ExecutionContext) {
         const request = context.switchToHttp().getRequest()
         const autenticacionHeader = request.headers.authorization
- 
         
         try {
             const token = autenticacionHeader.split(' ')[1]

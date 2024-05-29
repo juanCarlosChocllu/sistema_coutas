@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UseGuards } from '@nestjs/common';
 import { CreateCuotaDto } from './dto/create-cuota.dto';
 import { UpdateCuotaDto } from './dto/update-cuota.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,7 +8,13 @@ import { PaginacionDto } from './dto/paginacion.cuotas';
 import { EstadoCuota, Flag } from './enums/enum.cuotas';
 import { Pago} from 'src/pagos/schemas/pago.schema';
 import { EstadoPago } from 'src/pagos/enums/pago.enum';
+import { tokenAutenticacionGuard } from 'src/autenticacion/guards/token.autenticacion.guard';
+import { RolAutenticacionGuard } from 'src/autenticacion/guards/rol.autenticacion.guard';
+import { Roles } from 'src/autenticacion/decorators/roles.decorators';
+import { Rol } from 'src/autenticacion/enums/autenticacion.enum';
 
+
+@UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
 @Injectable()
 export class CuotasService {
   constructor(
@@ -17,7 +23,7 @@ export class CuotasService {
   
   ){}
 
-
+  @Roles([Rol.Admin])
  async create(createCuotaDto: CreateCuotaDto) {
     createCuotaDto.montoPagar= (createCuotaDto.montoTotal / createCuotaDto.cantidadCuotas)  
    const cuota= await this.CuotaModel.create(createCuotaDto)
@@ -37,6 +43,7 @@ export class CuotasService {
     return  cuota ;
   }
 
+  @Roles([Rol.Admin, Rol.cliente])
   async findAll(paginacionDto:PaginacionDto){
     const {pagina, limite, buscar}=paginacionDto
     const paginaNumero =Number(pagina) || 1
@@ -52,7 +59,7 @@ export class CuotasService {
       totalPaginas:totalPaginas
     } ;
   }
-
+  @Roles([Rol.Admin])
   async findCuotasPorUsuario(id: string){
     try {
       const cuotasPorUsuario= await this.CuotaModel.find(
@@ -66,20 +73,10 @@ export class CuotasService {
     }
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} cuota`;
-  }
-
-  update(id: number, updateCuotaDto: UpdateCuotaDto) {
-    return `This action updates a #${id} cuota`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} cuota`;
-  }
 
 
-  async vericarCuotaCompletada(pagos:string[], usuario:Types.ObjectId){  
+  @Roles([Rol.Admin])
+  async vericarCuotaCompletada(usuario:Types.ObjectId){      
    const  cuotas = await this.CuotaModel.find({usuario:usuario}).exec()
   for (const cuota of cuotas){
     let totalCuota= 0
@@ -93,15 +90,6 @@ export class CuotasService {
      }
       
   }
-
-
- 
-
-    
-   
-    
-  
-      
     
   }
  

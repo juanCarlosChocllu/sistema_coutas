@@ -19,6 +19,6 @@ import { tokenAutenticacionGuard } from './guards/token.autenticacion.guard';
   ],
   controllers: [AutenticacionController],
   providers: [AutenticacionService, RolAutenticacionGuard, tokenAutenticacionGuard],
-  exports :[RolAutenticacionGuard, tokenAutenticacionGuard]
+  exports :[RolAutenticacionGuard, tokenAutenticacionGuard, AutenticacionService]
 })
 export class AutenticacionModule {}

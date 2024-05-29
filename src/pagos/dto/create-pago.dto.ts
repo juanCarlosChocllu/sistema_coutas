@@ -3,13 +3,10 @@ import {IsDateString, IsNotEmpty, IsOptional, ArrayMinSize, IsMongoId, IsString}
 
 export class CreatePagoDto {
     
-    @IsNotEmpty()
-    cuotas:Types.ObjectId[]=[]
+
 
     @IsOptional()
     usuario:Types.ObjectId
-
-   
     @IsNotEmpty()
     @IsMongoId({each:true, message:'Pago invalido'})
     idPago:Types.ObjectId[]=[]

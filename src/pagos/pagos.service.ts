@@ -1,6 +1,5 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePagoDto } from './dto/create-pago.dto';
-import { UpdatePagoDto } from './dto/update-pago.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Pago } from './schemas/pago.schema';
 import { Model, Types } from 'mongoose';
@@ -24,15 +23,13 @@ export class PagosService {
  
    const pagosPendientes=  await this.buscarPagosNoPendientes(createPagoDto.idPago, createPagoDto.usuario)
    for(const cuota of pagosPendientes){
-    console.log(cuota);
-    
          const cuotaApagar= await this.PagosModel.findByIdAndUpdate({
             _id:cuota._id
           }, {estadoPago:EstadoPago.Pagado}, {new:true}).exec()     
          cuotasPagadas = cuotasPagadas.concat(cuotaApagar)
       }    
       
-      this.cuotasService.vericarCuotaCompletada(cuotasPagadas, createPagoDto.usuario)
+      this.cuotasService.vericarCuotaCompletada(createPagoDto.usuario)
       return cuotasPagadas
   }
 
@@ -80,19 +77,5 @@ export class PagosService {
        throw new NotFoundException()
       
     }
-  }
-
-
-
-  findOne(id: number) {
-    return `This action returns a #${id} pago`;
-  }
-
-  update(id: number, updatePagoDto: UpdatePagoDto) {
-    return `This action updates a #${id} pago`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} pago`;
   }
 }

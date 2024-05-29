@@ -31,6 +31,7 @@ export class Pago {
     fechaPago:Date
 
 
+
     @Prop({ default:Date.now})
     createdAt:Date
 

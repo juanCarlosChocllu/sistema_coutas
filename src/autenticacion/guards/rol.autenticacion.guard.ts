@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { AutenticacionService } from "../autenticacion.service";
 import { Reflector } from "@nestjs/core";
 import { Rol } from "../enums/autenticacion.enum";
@@ -11,11 +11,20 @@ export class RolAutenticacionGuard implements CanActivate{
         private reflector:Reflector
     ){}
     async canActivate(context: ExecutionContext) {
+       try {
         const request = context.switchToHttp().getRequest<Request>()
         const usuario = await this.autenticacionService.findOne(request['idUsuario'])
-        const roles = this.reflector.get<Rol[]>(ROLES_KEY, context.getHandler())
+        const roles = this.reflector.get<Rol[]>(ROLES_KEY, context.getHandler())    
         const verificarRoles = roles.some((role)=> usuario.rol.includes(role));
-        return verificarRoles
+        if(verificarRoles){
+            return verificarRoles
+        }
+        throw new UnauthorizedException('No estas autorizado') 
+    
+       } catch (error) {
+        throw new UnauthorizedException('No estas autorizado') 
+       }
+
     }
 
 }
