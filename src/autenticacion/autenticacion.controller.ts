@@ -1,5 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards ,Req} from '@nestjs/common';
-import { Request } from 'express';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { AutenticacionService } from './autenticacion.service';
 import { CreateAutenticacionDto } from './dto/create-autenticacion.dto';
 import { UpdateAutenticacionDto } from './dto/update-autenticacion.dto';
@@ -30,15 +29,14 @@ export class AutenticacionController {
   @UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
   @Roles([Rol.Admin])
   @Get('listar/clientes')
-  async findAllClientes(@Query() paginacionDto:PaginacionDto, @Req() request:Request<Express.Application>) { 
+  async findAllClientes(@Query() paginacionDto:PaginacionDto) { 
     return await this.autenticacionService.findAllClientes(paginacionDto);
   }
 
   @UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
   @Roles([Rol.Admin])
   @Get('listar/administradores')
-  async findAllAdministradores(@Query() paginacionDto:PaginacionDto, @Req() request:Request<Express.Application>) { 
-    console.log(request['idUsuario']);
+  async findAllAdministradores(@Query() paginacionDto:PaginacionDto) { 
     return await this.autenticacionService.findAllAdministradores(paginacionDto);
   }
   @UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
