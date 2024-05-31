@@ -13,6 +13,7 @@ import { RolAutenticacionGuard } from 'src/autenticacion/guards/rol.autenticacio
 import { Roles } from 'src/autenticacion/decorators/roles.decorators';
 import { Rol } from 'src/autenticacion/enums/autenticacion.enum';
 import { calcularMontoPorMes } from './dto/utils/redondear-utils';
+import { desEstructuraFecha } from './dto/utils/des-estructurar-fecha.util';
 
 
 @UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
@@ -28,13 +29,10 @@ export class CuotasService {
  async create(createCuotaDto: CreateCuotaDto) {
 
 
-    createCuotaDto.montoPagar=  calcularMontoPorMes(createCuotaDto.montoTotal, createCuotaDto.cantidadCuotas)
-   const cuota= await this.CuotaModel.create(createCuotaDto)
+  createCuotaDto.montoPagar=  calcularMontoPorMes(createCuotaDto.montoTotal, createCuotaDto.cantidadCuotas)
+  const cuota= await this.CuotaModel.create(createCuotaDto)
    await cuota.save()  
-   const partesFecha = createCuotaDto.fechaDePago.split('-');
-   const año = parseInt(partesFecha[0]);
-   const mes = parseInt(partesFecha[1]) - 1; 
-   const dia = parseInt(partesFecha[2]);
+  const [año, mes, dia] = desEstructuraFecha(createCuotaDto.fechaDePago)  
    for(let contador =0; contador < createCuotaDto.cantidadCuotas; contador ++ ){    
       const fechaVencimiento = new Date(año, mes, dia);
       fechaVencimiento.setMonth(fechaVencimiento.getMonth() + contador)
