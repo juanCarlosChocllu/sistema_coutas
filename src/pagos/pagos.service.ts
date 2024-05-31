@@ -18,17 +18,14 @@ export class PagosService {
 
   
   async createPago(createPagoDto: CreatePagoDto) {
-    
     let cuotasPagadas=[]
- 
    const pagosPendientes=  await this.buscarPagosNoPendientes(createPagoDto.idPago, createPagoDto.usuario)
    for(const cuota of pagosPendientes){
          const cuotaApagar= await this.PagosModel.findByIdAndUpdate({
             _id:cuota._id
-          }, {estadoPago:EstadoPago.Pagado, usuarioResponsablePago:createPagoDto.usuarioResponsablePago}, {new:true}).exec()     
+          }, {estadoPago:EstadoPago.Pagado, usuarioResponsablePago:new Types.ObjectId(createPagoDto.usuarioResponsablePago)}, {new:true}).exec()     
          cuotasPagadas = cuotasPagadas.concat(cuotaApagar)
       }    
-      
       this.cuotasService.vericarCuotaCompletada(createPagoDto.usuario)
       return cuotasPagadas
   }
@@ -50,14 +47,11 @@ export class PagosService {
     return pagosPendientes
   }
   
-  findAll() {
-    return this.PagosModel.find();
-  }
 
   async findAllPagadosCliente(id:string){
     try {
       const pagadosPorCliente = await this.PagosModel.find(
-        {usuario:new Types.ObjectId(id), estadoPago:EstadoPago.Pendiente}
+        {usuario:new Types.ObjectId(id)}
       ).sort({numeroDeCuota: -1} ).exec()
       return pagadosPorCliente
     } catch (error) {

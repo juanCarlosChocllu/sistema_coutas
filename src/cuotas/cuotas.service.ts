@@ -12,6 +12,7 @@ import { tokenAutenticacionGuard } from 'src/autenticacion/guards/token.autentic
 import { RolAutenticacionGuard } from 'src/autenticacion/guards/rol.autenticacion.guard';
 import { Roles } from 'src/autenticacion/decorators/roles.decorators';
 import { Rol } from 'src/autenticacion/enums/autenticacion.enum';
+import { calcularMontoPorMes } from './dto/utils/redondear-utils';
 
 
 @UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
@@ -25,23 +26,33 @@ export class CuotasService {
 
   @Roles([Rol.Admin])
  async create(createCuotaDto: CreateCuotaDto) {
-    createCuotaDto.montoPagar= (createCuotaDto.montoTotal / createCuotaDto.cantidadCuotas)  
+
+
+    createCuotaDto.montoPagar=  calcularMontoPorMes(createCuotaDto.montoTotal, createCuotaDto.cantidadCuotas)
    const cuota= await this.CuotaModel.create(createCuotaDto)
    await cuota.save()  
-   for(let contador =0; contador < createCuotaDto.cantidadCuotas; contador ++ ){
-    const fechaVencimiento = new Date(createCuotaDto.fechaDePago)
-    const pagos= await this.PagosMoldel.create({
+   const partesFecha = createCuotaDto.fechaDePago.split('-');
+   const año = parseInt(partesFecha[0]);
+   const mes = parseInt(partesFecha[1]) - 1; 
+   const dia = parseInt(partesFecha[2]);
+   for(let contador =0; contador < createCuotaDto.cantidadCuotas; contador ++ ){    
+      const fechaVencimiento = new Date(año, mes, dia);
+      fechaVencimiento.setMonth(fechaVencimiento.getMonth() + contador)
+      const pagos= await this.PagosMoldel.create({
       usuario:createCuotaDto.usuario,
       cuotas:cuota._id,
-      fechaPago: fechaVencimiento.setMonth(fechaVencimiento.getMonth() + contador),
+      fechaPago: fechaVencimiento.toDateString(),
       totalPagado: cuota.montoPagar,
       numeroDeCuota:contador + 1
     }
     )
     await pagos.save()
    }
+
     return  cuota ;
   }
+
+
 
   @Roles([Rol.Admin, Rol.cliente])
   async findAll(paginacionDto:PaginacionDto){
