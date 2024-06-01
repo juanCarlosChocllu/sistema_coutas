@@ -22,7 +22,7 @@ export class  tokenAutenticacionGuard implements CanActivate{
             request['idUsuario']= idUsuario.id
             return true
         } catch (error) {
-            throw new UnauthorizedException('Token requerido')   
+            throw new UnauthorizedException('No estas autorizado')   
         }    
     }
 }

@@ -12,8 +12,8 @@ import { tokenAutenticacionGuard } from 'src/autenticacion/guards/token.autentic
 import { RolAutenticacionGuard } from 'src/autenticacion/guards/rol.autenticacion.guard';
 import { Roles } from 'src/autenticacion/decorators/roles.decorators';
 import { Rol } from 'src/autenticacion/enums/autenticacion.enum';
-import { calcularMontoPorMes } from './dto/utils/redondear-utils';
-import { desEstructuraFecha } from './dto/utils/des-estructurar-fecha.util';
+import { calcularMontoPorMes } from './utils/redondear-utils';
+import { desEstructuraFecha } from './utils/des-estructurar-fecha.util';
 
 
 @UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
@@ -27,11 +27,10 @@ export class CuotasService {
 
   @Roles([Rol.Admin])
  async create(createCuotaDto: CreateCuotaDto) {
-
-
   createCuotaDto.montoPagar=  calcularMontoPorMes(createCuotaDto.montoTotal, createCuotaDto.cantidadCuotas)
   const cuota= await this.CuotaModel.create(createCuotaDto)
    await cuota.save()  
+   
   const [año, mes, dia] = desEstructuraFecha(createCuotaDto.fechaDePago)  
    for(let contador =0; contador < createCuotaDto.cantidadCuotas; contador ++ ){    
       const fechaVencimiento = new Date(año, mes, dia);
