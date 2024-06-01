@@ -5,10 +5,15 @@ import { ProductosModule } from './productos/productos.module';
 import { CuotasModule } from './cuotas/cuotas.module';
 import { PagosModule } from './pagos/pagos.module';
 import { GastosModule } from './gastos/gastos.module';
+import { ConfigModule } from '@nestjs/config';
+import { coneccionMongo } from './config/coneccion-db';
+
 
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb+srv://jchocllu:ct0NZCQ3fF2sjeYd@cluster0.t32gysh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0') 
+  imports: [
+   ConfigModule.forRoot({isGlobal: true}) ,
+  MongooseModule.forRoot(coneccionMongo) 
   ,AutenticacionModule,
    ProductosModule,
    CuotasModule,
