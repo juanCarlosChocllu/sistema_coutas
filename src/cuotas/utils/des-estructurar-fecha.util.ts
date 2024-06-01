@@ -1,5 +1,5 @@
 
-export function desEstructuraFecha(fecha:string){
+export function desEstructuraFecha(fecha:string):number[]{
     const partesFecha = fecha.split('-');
     const año = parseInt(partesFecha[0]);
     const mes = parseInt(partesFecha[1]) - 1; 
