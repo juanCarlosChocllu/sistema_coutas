@@ -8,7 +8,7 @@ import { GastosModule } from './gastos/gastos.module';
 
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://localhost:27017/bd_sistema_cuotas') 
+  imports: [MongooseModule.forRoot('mongodb+srv://jchocllu:ct0NZCQ3fF2sjeYd@cluster0.t32gysh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0') 
   ,AutenticacionModule,
    ProductosModule,
    CuotasModule,
