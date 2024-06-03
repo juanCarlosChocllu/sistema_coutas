@@ -20,10 +20,10 @@ export class PagosController {
 
 
   @Roles([Rol.Admin])
-  @Post('create/:idUsuario')
-  async createPago(@Body() createPagoDto: CreatePagoDto,@Param('idUsuario') usuario:string,  @Req() request:Request<Express.Application>) {
+  @Post('create/:idcuota')
+  async createPago(@Body() createPagoDto: CreatePagoDto,@Param('idcuota') Cuota:string,  @Req() request:Request<Express.Application>) {
    try { 
-     createPagoDto.usuario= new Types.ObjectId(usuario)
+     createPagoDto.cuota= new Types.ObjectId(Cuota)
      createPagoDto.usuarioResponsablePago= request['idUsuario']
     return await this.pagosService.createPago(createPagoDto);
    } catch (error) {     

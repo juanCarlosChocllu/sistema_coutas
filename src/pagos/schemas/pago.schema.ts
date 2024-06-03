@@ -7,10 +7,7 @@ export class Pago {
 
     @Prop({type: Types.ObjectId, ref:'Cuotas'})
     cuotas:Types.ObjectId
-
-    @Prop({type: Types.ObjectId, ref:'Usuario'})//para verificar con que admin se iso el pago
-    usuario:Types.ObjectId
-
+    
     @Prop({ ref:'Usuario'})
     usuarioResponsablePago:string
 

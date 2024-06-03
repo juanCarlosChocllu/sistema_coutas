@@ -3,7 +3,7 @@ import {IsNotEmpty, IsOptional, ArrayMinSize, IsMongoId, IsDefined} from 'class-
 
 export class CreatePagoDto {
     @IsOptional()
-    usuario:Types.ObjectId
+    cuota:Types.ObjectId
 
     @IsMongoId({each:true, message:'Pago invalido'})
     @IsNotEmpty({ message:'Este campo es obligatorio'})

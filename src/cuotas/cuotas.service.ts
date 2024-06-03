@@ -27,16 +27,15 @@ export class CuotasService {
 
   @Roles([Rol.Admin])
  async create(createCuotaDto: CreateCuotaDto) {
+  
   createCuotaDto.montoPagar=  calcularMontoPorMes(createCuotaDto.montoTotal, createCuotaDto.cantidadCuotas)
   const cuota= await this.CuotaModel.create(createCuotaDto)
    await cuota.save()  
-   
   const [año, mes, dia] = desEstructuraFecha(createCuotaDto.fechaDePago)  
    for(let contador =0; contador < createCuotaDto.cantidadCuotas; contador ++ ){    
       const fechaVencimiento = new Date(año, mes, dia);
       fechaVencimiento.setMonth(fechaVencimiento.getMonth() + contador)
       const pagos= await this.PagosMoldel.create({
-      usuario:createCuotaDto.usuario,
       cuotas:cuota._id,
       fechaPago: fechaVencimiento.toDateString(),
       totalPagado: cuota.montoPagar,
@@ -84,8 +83,8 @@ export class CuotasService {
 
 
   @Roles([Rol.Admin])
-  async vericarCuotaCompletada(usuario:Types.ObjectId){      
-   const  cuotas = await this.CuotaModel.find({usuario:usuario}).exec()
+  async vericarCuotaCompletada(cuota:Types.ObjectId){      
+   const  cuotas = await this.CuotaModel.find({_id:cuota}).exec()
   for (const cuota of cuotas){
     let totalCuota= 0
    const cuotasPagadas = await  this.PagosMoldel.find({estadoPago:EstadoPago.Pagado, cuotas:cuota._id})

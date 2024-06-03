@@ -19,9 +19,9 @@ export class PagosService {
 ){}
 
   
-  async createPago(createPagoDto: CreatePagoDto) {
+  async createPago(createPagoDto: CreatePagoDto) {    
     let cuotasPagadas=[]
-   const pagosPendientes=  await this.buscarPagosNoPendientes(createPagoDto.idPago, createPagoDto.usuario)
+   const pagosPendientes=  await this.buscarPagosNoPendientes(createPagoDto.idPago, createPagoDto.cuota)
     const {nombres, apellidos}= await this.autenticacionSerice.buscarUsuarioResposablePago(createPagoDto.usuarioResponsablePago)
     const usuario:string = nombres + ' '+apellidos 
    for(const cuota of pagosPendientes){
@@ -30,20 +30,21 @@ export class PagosService {
           }, {estadoPago:EstadoPago.Pagado, usuarioResponsablePago:usuario}, {new:true}).exec()     
          cuotasPagadas = cuotasPagadas.concat(cuotaApagar)
       }    
-      this.cuotasService.vericarCuotaCompletada(createPagoDto.usuario)
+      this.cuotasService.vericarCuotaCompletada(createPagoDto.cuota)
       return cuotasPagadas
   }
 
- async  buscarPagosNoPendientes(idPagos:Types.ObjectId[], usuario:Types.ObjectId){
-  
+ async  buscarPagosNoPendientes(idPagos:Types.ObjectId[], cuota:Types.ObjectId){
+;  
   let pagosPendientes =[]
-     for(const id of idPagos){            
+     for(const id of idPagos){       
+ 
       const pagosPendientesModel= await this.PagosModel.find({
         _id: new Types.ObjectId(id),
-        usuario:usuario,
+        cuotas: new Types.ObjectId(cuota),
         estadoPago:EstadoPago.Pendiente
       }).exec()
-  
+      console.log(pagosPendientesModel)
     pagosPendientes = pagosPendientes.concat(pagosPendientesModel)
      }     
      
