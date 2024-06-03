@@ -35,5 +35,13 @@ export class PagosController {
   findAllPagadosCliente(@Param('idcuota') cuota:string) {    
     return this.pagosService.findAllPagadosCliente(cuota);
   }
+  @Roles([Rol.Admin, Rol.cliente])
+  @Get('listar/mes/:idcuota')
+  listarPagosClientePorMes(@Param('idcuota') cuota:Types.ObjectId){
+    return this.pagosService.listarPagosClientePorMes(cuota)
 
+
+
+  }
+  
 }

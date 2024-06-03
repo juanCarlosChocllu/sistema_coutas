@@ -44,11 +44,9 @@ export class PagosService {
         cuotas: new Types.ObjectId(cuota),
         estadoPago:EstadoPago.Pendiente
       }).exec()
-      console.log(pagosPendientesModel)
     pagosPendientes = pagosPendientes.concat(pagosPendientesModel)
      }     
-     
-     
+
     return pagosPendientes
   }
   
@@ -58,25 +56,49 @@ export class PagosService {
       const pagos= await this.PagosModel.find(
         {cuotas:new Types.ObjectId(cuota)}
       ).sort({numeroDeCuota: -1} ).exec()       
-      const Pendientes= pagos.filter(pagos => pagos.estadoPago == EstadoPago.Pendiente)
-      const Pagados = pagos.filter(pagos => pagos.estadoPago == EstadoPago.Pagado)
-      const totaPagados= Pagados.reduce((acc, pagos)=> {
-        return acc + pagos.totalPagado
-      },0)
-      const totalPendientes= Pendientes.reduce((acc, pagos)=> {
-        return acc + pagos.totalPagado
-      },0)
-           
+     const total= this.calcularPagosPendiente(pagos)
+  
       return {
-        pagosInformacio:{totaPagados,
-          totalPendientes},
+        total,
         pagos
       }
     } catch (error) {
        throw new NotFoundException()
     }
   }
-  
+
+  async listarPagosClientePorMes(cuota:Types.ObjectId){
+    const fecha= new Date()
+    const pagos= await this.PagosModel.find(
+      {cuotas:new Types.ObjectId(cuota), 
+      fechaPago:{$lte:fecha}
+      }
+    ) 
+    .exec() 
+    const informacionPagos= this.calcularPagosPendiente(pagos) 
+    return {
+      informacionPagos,
+      pagos
+
+    }
+  }
+
+
+  calcularPagosPendiente(pagos:Pago[]){
+    const Pendientes= pagos.filter(pagos => pagos.estadoPago == EstadoPago.Pendiente)
+    const Pagados = pagos.filter(pagos => pagos.estadoPago == EstadoPago.Pagado)
+    const totaPagados= Pagados.reduce((acc, pagos)=> {
+      return acc + pagos.totalPagado
+    },0)
+    const totalPendientes= Pendientes.reduce((acc, pagos)=> {
+      return acc + pagos.totalPagado
+    },0)
+
+    return {
+      pagosInformacio:{totaPagados,
+        totalPendientes},
+    }
+  }
 
    
 }
