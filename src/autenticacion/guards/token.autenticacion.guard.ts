@@ -18,7 +18,7 @@ export class  tokenAutenticacionGuard implements CanActivate{
             }
             const idUsuario=  await this.jwtService.verifyAsync(token, {
                 secret: jwtConstants.secret
-            })    
+            })        
             request['idUsuario']= idUsuario.id
             return true
         } catch (error) {

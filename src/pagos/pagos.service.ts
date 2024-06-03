@@ -6,13 +6,15 @@ import { Model, Types } from 'mongoose';
 import { EstadoPago } from './enums/pago.enum';
 
 import {CuotasService } from '../cuotas/cuotas.service'
+import { AutenticacionService } from 'src/autenticacion/autenticacion.service';
 
 @Injectable()
 export class PagosService {
 
   constructor(
     @InjectModel(Pago.name) private PagosModel:Model<Pago>,
-    private  cuotasService:CuotasService
+    private  cuotasService:CuotasService,
+    private readonly autenticacionSerice:AutenticacionService
     
 ){}
 
@@ -20,10 +22,12 @@ export class PagosService {
   async createPago(createPagoDto: CreatePagoDto) {
     let cuotasPagadas=[]
    const pagosPendientes=  await this.buscarPagosNoPendientes(createPagoDto.idPago, createPagoDto.usuario)
+    const {nombres, apellidos}= await this.autenticacionSerice.buscarUsuarioResposablePago(createPagoDto.usuarioResponsablePago)
+    const usuario:string = nombres + ' '+apellidos 
    for(const cuota of pagosPendientes){
          const cuotaApagar= await this.PagosModel.findByIdAndUpdate({
             _id:cuota._id
-          }, {estadoPago:EstadoPago.Pagado, usuarioResponsablePago:new Types.ObjectId(createPagoDto.usuarioResponsablePago)}, {new:true}).exec()     
+          }, {estadoPago:EstadoPago.Pagado, usuarioResponsablePago:usuario}, {new:true}).exec()     
          cuotasPagadas = cuotasPagadas.concat(cuotaApagar)
       }    
       this.cuotasService.vericarCuotaCompletada(createPagoDto.usuario)
@@ -48,28 +52,30 @@ export class PagosService {
   }
   
 
-  async findAllPagadosCliente(id:string){
+  async findAllPagadosCliente(cuota:string){
     try {
-      const pagadosPorCliente = await this.PagosModel.find(
-        {usuario:new Types.ObjectId(id)}
-      ).sort({numeroDeCuota: -1} ).exec()
-      return pagadosPorCliente
+      const pagos= await this.PagosModel.find(
+        {cuotas:new Types.ObjectId(cuota)}
+      ).sort({numeroDeCuota: -1} ).exec()       
+      const Pendientes= pagos.filter(pagos => pagos.estadoPago == EstadoPago.Pendiente)
+      const Pagados = pagos.filter(pagos => pagos.estadoPago == EstadoPago.Pagado)
+      const totaPagados= Pagados.reduce((acc, pagos)=> {
+        return acc + pagos.totalPagado
+      },0)
+      const totalPendientes= Pendientes.reduce((acc, pagos)=> {
+        return acc + pagos.totalPagado
+      },0)
+           
+      return {
+        pagosInformacio:{totaPagados,
+          totalPendientes},
+        pagos
+      }
     } catch (error) {
        throw new NotFoundException()
     }
   }
+  
 
-
- 
-  async findAllPendientesCliente(id:string){   
-    try {
-      const pendientePorCliente = await this.PagosModel.find(
-        {usuario:new Types.ObjectId(id),
-    estadoPago:EstadoPago.Pendiente}).exec()
-      return pendientePorCliente
-    } catch (error) {
-       throw new NotFoundException()
-      
-    }
-  }
+   
 }

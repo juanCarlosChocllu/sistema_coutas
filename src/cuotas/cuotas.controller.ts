@@ -9,6 +9,8 @@ import { tokenAutenticacionGuard } from 'src/autenticacion/guards/token.autentic
 import { RolAutenticacionGuard } from 'src/autenticacion/guards/rol.autenticacion.guard';
 import { Roles } from 'src/autenticacion/decorators/roles.decorators';
 import { Rol } from 'src/autenticacion/enums/autenticacion.enum';
+import { Usuario } from 'src/autenticacion/schemas/autenticacion.schema';
+import { Cuota } from './schemas/cuota.schema';
 
 @ApiTags('cuotas')
 @UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
@@ -40,6 +42,12 @@ export class CuotasController {
   @Get('usuario/:id')
   findCuotasPorUsuario(@Param('id') id: string){
     return this.cuotasService.findCuotasPorUsuario(id)
+
+  }
+  @Roles([Rol.Admin, Rol.Admin])
+  @Get('listar/cliente/:idUsuario')
+  async listarCuotasCliente(@Param('idUsuario') usuario:Types.ObjectId):Promise<Cuota[]>{
+    return await this.cuotasService.listarCuotasCliente(usuario)
 
   }
 

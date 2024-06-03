@@ -9,6 +9,7 @@ import { tokenAutenticacionGuard } from 'src/autenticacion/guards/token.autentic
 import { RolAutenticacionGuard } from 'src/autenticacion/guards/rol.autenticacion.guard';
 import { Rol } from 'src/autenticacion/enums/autenticacion.enum';
 import { Roles } from 'src/autenticacion/decorators/roles.decorators';
+import { Cuota } from 'src/cuotas/schemas/cuota.schema';
 
 
 @ApiTags('pagos')
@@ -29,20 +30,10 @@ export class PagosController {
       throw new NotFoundException(error.message)    
    }
   }
-
-
   @Roles([Rol.Admin, Rol.cliente])
-  @Get('listar/:idCliente')
-  findAllPagadosCliente(@Param('idCliente') idCliente:string) {    
-    return this.pagosService.findAllPagadosCliente(idCliente);
+  @Get('listar/:idcuota')
+  findAllPagadosCliente(@Param('idcuota') cuota:string) {    
+    return this.pagosService.findAllPagadosCliente(cuota);
   }
-
-
-  @Roles([Rol.Admin])
-  @Get('pendientes/listar/:idCliente')
-  findAllPendientesCliente(@Param('idCliente') idCliente:string) {  
-    return this.pagosService.findAllPendientesCliente(idCliente);
-  }
-
 
 }

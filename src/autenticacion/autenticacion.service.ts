@@ -134,10 +134,15 @@ export class AutenticacionService {
 
   }
 
+ async buscarUsuarioResposablePago(id:Types.ObjectId){
+   const usuarioResponsable =await this.UsuarioModel.findOne(new  Types.ObjectId(id)).exec()   
+   return usuarioResponsable
+
+ }  
   async update(id: string, updateAutenticacionDto: UpdateAutenticacionDto) {
     
     try {
-      const usuario=await this.UsuarioModel.findById(new Types.ObjectId(id)).exec()
+      const usuario=await this.UsuarioModel.findById(new Types.ObjectId(id)).exec()    
       if(!usuario){
         throw new NotFoundException()
 

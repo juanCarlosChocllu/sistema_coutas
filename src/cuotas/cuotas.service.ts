@@ -100,5 +100,13 @@ export class CuotasService {
   }
     
   }
- 
+
+  async listarCuotasCliente(usuario:Types.ObjectId):Promise<Cuota[]>{
+    try {
+      const cuotas= await this.CuotaModel.find({usuario:new Types.ObjectId(usuario)}).exec()
+      return cuotas
+    } catch (error) {
+       throw new BadRequestException()
+    }
+  }
 }

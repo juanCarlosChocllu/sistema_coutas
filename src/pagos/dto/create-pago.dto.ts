@@ -1,15 +1,13 @@
 import { Types } from "mongoose"
-import {IsDateString, IsNotEmpty, IsOptional, ArrayMinSize, IsMongoId, IsString} from 'class-validator'
+import {IsNotEmpty, IsOptional, ArrayMinSize, IsMongoId, IsDefined} from 'class-validator'
 
 export class CreatePagoDto {
-    
-
-
     @IsOptional()
     usuario:Types.ObjectId
-    @IsNotEmpty()
+
     @IsMongoId({each:true, message:'Pago invalido'})
-    idPago:Types.ObjectId[]=[]
+    @IsNotEmpty({ message:'Este campo es obligatorio'})
+    idPago:Types.ObjectId[]
 
     @IsOptional()
     numeroDeCuota:number
