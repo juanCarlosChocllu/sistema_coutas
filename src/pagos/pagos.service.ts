@@ -7,6 +7,8 @@ import { EstadoPago } from './enums/pago.enum';
 
 import {CuotasService } from '../cuotas/cuotas.service'
 import { AutenticacionService } from 'src/autenticacion/autenticacion.service';
+import { log } from 'console';
+import { retry } from 'rxjs';
 
 @Injectable()
 export class PagosService {
@@ -55,11 +57,12 @@ export class PagosService {
     try {
       const pagos= await this.PagosModel.find(
         {cuotas:new Types.ObjectId(cuota)}
-      ).sort({numeroDeCuota: -1} ).exec()       
-     const total= this.calcularPagosPendiente(pagos)
-  
+      ).exec()       
+     const pagosPendientes= this.calcularPagosPendiente(pagos)
+    const pagosPagados= this.calcularPagosPagados(pagos)
       return {
-        total,
+        pagosPendientes,
+        pagosPagados,
         pagos
       }
     } catch (error) {
@@ -71,34 +74,54 @@ export class PagosService {
     const fecha= new Date()
     const pagos= await this.PagosModel.find(
       {cuotas:new Types.ObjectId(cuota), 
-      fechaPago:{$lte:fecha}
-      }
-    ) 
-    .exec() 
-    const informacionPagos= this.calcularPagosPendiente(pagos) 
+        fechaPago:{$lte:fecha}
+      }).sort({numeroDeCuota:-1})
+      .limit(6)
+      .exec()  
+   const total= await this.calcularMontoTotalPagos(cuota)
+    const pagosPendientes= this.calcularPagosPendiente(pagos) 
+    const montoRestante= await this.calcularMontoRestantePago(cuota)
     return {
-      informacionPagos,
+      total,
+      montoRestante,
+      totalApagar: pagosPendientes,
       pagos
 
     }
   }
 
 
-  calcularPagosPendiente(pagos:Pago[]){
+  calcularPagosPendiente(pagos:Pago[]):number{
     const Pendientes= pagos.filter(pagos => pagos.estadoPago == EstadoPago.Pendiente)
-    const Pagados = pagos.filter(pagos => pagos.estadoPago == EstadoPago.Pagado)
-    const totaPagados= Pagados.reduce((acc, pagos)=> {
-      return acc + pagos.totalPagado
+    const totalPendientes= Pendientes.reduce((total, pagos)=> {
+      return total + pagos.totalPagado
     },0)
-    const totalPendientes= Pendientes.reduce((acc, pagos)=> {
-      return acc + pagos.totalPagado
-    },0)
-
-    return {
-      pagosInformacio:{totaPagados,
-        totalPendientes},
-    }
+    return totalPendientes
   }
 
-   
+  calcularPagosPagados(pagos:Pago[]):number{
+    const Pagados = pagos.filter(pagos => pagos.estadoPago == EstadoPago.Pagado)
+    const totaPagados= Pagados.reduce((total, pagos)=> {
+      return total + pagos.totalPagado
+    },0)
+    return totaPagados
+
+  }
+  async calcularMontoTotalPagos(cuota:Types.ObjectId){
+    const pagos= await this.PagosModel.find({cuotas:new Types.ObjectId(cuota)})
+   const total= pagos.reduce((total, pagos)=>{
+      return total + pagos.totalPagado
+    },0)
+    return total
+  }
+
+  async calcularMontoRestantePago(cuota:Types.ObjectId){
+    const pagos= await this.PagosModel.find({cuotas:new Types.ObjectId(cuota)})
+    const pendientes = pagos.filter((pagos)=> pagos.estadoPago === EstadoPago.Pendiente)
+    const totalPagosPendientes= pendientes.reduce((total, pagos) =>{
+      return  total + pagos.totalPagado
+    }, 0)
+    return totalPagosPendientes
+  }
+
 }

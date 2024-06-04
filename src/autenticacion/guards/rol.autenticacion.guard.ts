@@ -14,7 +14,7 @@ export class RolAutenticacionGuard implements CanActivate{
        try {
         const request = context.switchToHttp().getRequest<Request>()
         const usuario = await this.autenticacionService.findOne(request['idUsuario'])
-        const roles = this.reflector.get<Rol[]>(ROLES_KEY, context.getHandler())    
+        const roles = this.reflector.get<Rol[]>(ROLES_KEY, context.getHandler())        
         const verificarRoles = roles.some((role)=> usuario.rol.includes(role));
         if(verificarRoles){
             return verificarRoles

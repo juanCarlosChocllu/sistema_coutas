@@ -12,13 +12,13 @@ export class  tokenAutenticacionGuard implements CanActivate{
         const autenticacionHeader = request.headers.authorization
         
         try {
-            const token = autenticacionHeader.split(' ')[1]
+            const token = autenticacionHeader.split(' ')[1]    
             if(!token){
                 throw new UnauthorizedException('Token requerido')
             }
             const idUsuario=  await this.jwtService.verifyAsync(token, {
                 secret: jwtConstants.secret
-            })        
+            })       
             request['idUsuario']= idUsuario.id
             return true
         } catch (error) {

@@ -21,7 +21,7 @@ export class CuotasController {
   @Roles([Rol.Admin])
   @Post('create/:idUsuario/:idProdcuto')
   create( @Param ('idUsuario') idUsuario:string , @Param('idProdcuto') idProdcuto:string , @Body()  createCuotaDto: CreateCuotaDto) {
-   try {
+    try {
     createCuotaDto.usuario= new Types.ObjectId(idUsuario)
     createCuotaDto.producto =new Types.ObjectId(idProdcuto)
     return this.cuotasService.create(createCuotaDto);

@@ -39,9 +39,6 @@ export class PagosController {
   @Get('listar/mes/:idcuota')
   listarPagosClientePorMes(@Param('idcuota') cuota:Types.ObjectId){
     return this.pagosService.listarPagosClientePorMes(cuota)
-
-
-
   }
   
 }
