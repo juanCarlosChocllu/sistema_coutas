@@ -27,7 +27,6 @@ export class CuotasService {
 
   @Roles([Rol.Admin])
  async create(createCuotaDto: CreateCuotaDto) {
-  
   createCuotaDto.montoPagar=  calcularMontoPorMes(createCuotaDto.montoTotal, createCuotaDto.cantidadCuotas)
   const cuota= await this.CuotaModel.create(createCuotaDto)
    await cuota.save()  

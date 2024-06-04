@@ -14,7 +14,7 @@ export class Cuota {
     montoTotal:number
 
     @Prop()
-    cantidadCoutas:number
+    cantidadCuotas:number
 
     @Prop()
     montoPagar:number
