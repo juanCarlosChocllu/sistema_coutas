@@ -81,8 +81,12 @@ export class PagosService {
    const total= await this.calcularMontoTotalPagos(cuota)
     const pagosPendientes= this.calcularPagosPendiente(pagos) 
     const montoRestante= await this.calcularMontoRestantePago(cuota)
+    const cantidadCuotasPagadas= await this.cantidadCuotasPorEstado(cuota, EstadoPago.Pagado)
+    const cantidadCuotasApagar= await this.cantidadDeCuotas(cuota)
     return {
       total,
+      cantidadCuotasApagar,
+      cantidadCuotasPagadas,
       montoRestante,
       totalApagar: pagosPendientes,
       pagos
@@ -96,7 +100,7 @@ export class PagosService {
     const totalPendientes= Pendientes.reduce((total, pagos)=> {
       return total + pagos.totalPagado
     },0)
-    return totalPendientes
+    return  totalPendientes
   }
 
   calcularPagosPagados(pagos:Pago[]):number{
@@ -107,7 +111,7 @@ export class PagosService {
     return totaPagados
 
   }
-  async calcularMontoTotalPagos(cuota:Types.ObjectId){
+  async calcularMontoTotalPagos(cuota:Types.ObjectId):Promise<number>{
     const pagos= await this.PagosModel.find({cuotas:new Types.ObjectId(cuota)})
    const total= pagos.reduce((total, pagos)=>{
       return total + pagos.totalPagado
@@ -115,13 +119,25 @@ export class PagosService {
     return total
   }
 
-  async calcularMontoRestantePago(cuota:Types.ObjectId){
+  async calcularMontoRestantePago(cuota:Types.ObjectId):Promise<number>{
     const pagos= await this.PagosModel.find({cuotas:new Types.ObjectId(cuota)})
     const pendientes = pagos.filter((pagos)=> pagos.estadoPago === EstadoPago.Pendiente)
     const totalPagosPendientes= pendientes.reduce((total, pagos) =>{
       return  total + pagos.totalPagado
     }, 0)
     return totalPagosPendientes
+  }
+
+  async cantidadCuotasPorEstado(cuota:Types.ObjectId, estado:EstadoPago){
+    const pagos= await this.PagosModel.find({cuotas:new Types.ObjectId(cuota), estadoPagoP:estado})
+    const cantidadPagadas= pagos.length
+    return cantidadPagadas
+  }
+
+  async cantidadDeCuotas(cuota:Types.ObjectId){
+    const pagos= await this.PagosModel.find({cuotas:new Types.ObjectId(cuota)})
+    const cantidadPagos= pagos.length
+    return cantidadPagos
   }
 
 }
