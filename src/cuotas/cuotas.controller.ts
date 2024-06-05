@@ -11,6 +11,7 @@ import { Roles } from 'src/autenticacion/decorators/roles.decorators';
 import { Rol } from 'src/autenticacion/enums/autenticacion.enum';
 import { Usuario } from 'src/autenticacion/schemas/autenticacion.schema';
 import { Cuota } from './schemas/cuota.schema';
+import { query } from 'express';
 
 @ApiTags('cuotas')
 @UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
@@ -33,21 +34,11 @@ export class CuotasController {
    }
   }
 
-  @Roles([Rol.Admin, Rol.cliente])
-  @Get('listar')
-  findAll(@Query() paginacionDto:PaginacionDto) {
-    return this.cuotasService.findAll(paginacionDto);
-  }
-  @Roles([Rol.Admin])
-  @Get('usuario/:id')
-  findCuotasPorUsuario(@Param('id') id: string){
-    return this.cuotasService.findCuotasPorUsuario(id)
 
-  }
-  @Roles([Rol.Admin, Rol.Admin])
+  @Roles([Rol.Admin, Rol.cliente])
   @Get('listar/cliente/:idUsuario')
-  async listarCuotasCliente(@Param('idUsuario') usuario:Types.ObjectId):Promise<Cuota[]>{
-    return await this.cuotasService.listarCuotasCliente(usuario)
+  async listarCuotasCliente(@Param('idUsuario') usuario:Types.ObjectId, @Query() paginacionDto:PaginacionDto ){
+    return await this.cuotasService.listarCuotasCliente(usuario, paginacionDto)
 
   }
 

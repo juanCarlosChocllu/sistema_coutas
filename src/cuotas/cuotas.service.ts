@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException, UseGuards } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, NotFoundException, UseGuards } from '@nestjs/common';
 import { CreateCuotaDto } from './dto/create-cuota.dto';
 import { UpdateCuotaDto } from './dto/update-cuota.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -15,8 +15,6 @@ import { Rol } from 'src/autenticacion/enums/autenticacion.enum';
 import { calcularMontoPorMes } from './utils/redondear-utils';
 import { desEstructuraFecha } from './utils/des-estructurar-fecha.util';
 
-
-@UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
 @Injectable()
 export class CuotasService {
   constructor(
@@ -25,7 +23,7 @@ export class CuotasService {
   
   ){}
 
-  @Roles([Rol.Admin])
+
  async create(createCuotaDto: CreateCuotaDto) {
   createCuotaDto.montoPagar=  calcularMontoPorMes(createCuotaDto.montoTotal, createCuotaDto.cantidadCuotas)
   const cuota= await this.CuotaModel.create(createCuotaDto)
@@ -44,12 +42,12 @@ export class CuotasService {
     await pagos.save()
    }
 
-    return  cuota ;
+    return  HttpStatus.CREATED ;
   }
 
 
 
-  @Roles([Rol.Admin, Rol.cliente])
+
   async findAll(paginacionDto:PaginacionDto){
     const {pagina, limite, buscar}=paginacionDto
     const paginaNumero =Number(pagina) || 1
@@ -65,19 +63,8 @@ export class CuotasService {
       totalPaginas:totalPaginas
     } ;
   }
-  @Roles([Rol.Admin])
-  async findCuotasPorUsuario(id: string){
-    try {
-      const cuotasPorUsuario= await this.CuotaModel.find(
-        {usuario:new Types.ObjectId(id), flag:Flag.Nuevo}
-      ).exec()  
-      return cuotasPorUsuario
-    } catch (error) {
-        if(error){
-          throw new BadRequestException('Usuario invalido')
-        }  
-    }
-  }
+
+
 
 
 
@@ -99,11 +86,37 @@ export class CuotasService {
     
   }
 
-  async listarCuotasCliente(usuario:Types.ObjectId):Promise<Cuota[]>{
+  async listarCuotasCliente(usuario:Types.ObjectId, paginacionDto:PaginacionDto){
+    const {pagina, limite, buscar}= paginacionDto    
+    const paginaNumero = Number(pagina) || 1
+    const limiteNumero = Number(limite) || 6
+    const filtrador:any={usuario:new Types.ObjectId(usuario)}
+    if(buscar){
+      if (buscar) {
+        const [año, mes, dia] = buscar.split('-');
+        const fechaInicio = new Date(parseInt(año), parseInt(mes) - 1, parseInt(dia));
+        const fechaFin = new Date(parseInt(año), parseInt(mes) - 1, parseInt(dia) + 1);
+        filtrador.createdAt = {
+            $gte: fechaInicio,
+            $lt: fechaFin
+        };
+    }
+    }
     try {
-      const cuotas= await this.CuotaModel.find({usuario:new Types.ObjectId(usuario)}).exec()
-      return cuotas
+      const totalCuotas= await this.CuotaModel.countDocuments().exec() 
+      const totalPaginas= Math.ceil(totalCuotas / limiteNumero)  
+      const cuotas= await this.CuotaModel.find(filtrador)
+      .skip((paginaNumero -1 )* limiteNumero)
+      .limit(limiteNumero)
+      .exec()
+      
+      return {
+        cuotas,
+        pagina:totalPaginas
+      }
     } catch (error) {
+      console.log(error);
+      
        throw new BadRequestException()
     }
   }

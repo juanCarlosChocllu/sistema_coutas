@@ -58,8 +58,8 @@ export class PagosService {
       const pagos= await this.PagosModel.find(
         {cuotas:new Types.ObjectId(cuota)}
       ).exec()       
-     const pagosPendientes= this.calcularPagosPendiente(pagos)
-    const pagosPagados= this.calcularPagosPagados(pagos)
+     const pagosPendientes= this.calcularPagosPorEstado(pagos, EstadoPago.Pendiente)
+    const pagosPagados= this.calcularPagosPorEstado(pagos, EstadoPago.Pagado)
       return {
         pagosPendientes,
         pagosPagados,
@@ -79,7 +79,7 @@ export class PagosService {
       .limit(6)
       .exec()  
    const total= await this.calcularMontoTotalPagos(cuota)
-    const pagosPendientes= this.calcularPagosPendiente(pagos) 
+    const pagosPendientes= this.calcularPagosPorEstado(pagos, EstadoPago.Pendiente) 
     const montoRestante= await this.calcularMontoRestantePago(cuota)
     const cantidadCuotasPagadas= await this.cantidadCuotasPorEstado(cuota, EstadoPago.Pagado)
     const cantidadCuotasApagar= await this.cantidadDeCuotas(cuota)
@@ -95,23 +95,16 @@ export class PagosService {
   }
 
 
-  calcularPagosPendiente(pagos:Pago[]):number{
-    const Pendientes= pagos.filter(pagos => pagos.estadoPago == EstadoPago.Pendiente)
-    const totalPendientes= Pendientes.reduce((total, pagos)=> {
+  private calcularPagosPorEstado(pagos:Pago[], estado:EstadoPago):number{ // calcula los pagos depende al estado que se le mande
+    const pagosTotal= pagos.filter(pagos => pagos.estadoPago == estado)
+    const total= pagosTotal.reduce((total, pagos)=> {
       return total + pagos.totalPagado
     },0)
-    return  totalPendientes
+    return  total
   }
 
-  calcularPagosPagados(pagos:Pago[]):number{
-    const Pagados = pagos.filter(pagos => pagos.estadoPago == EstadoPago.Pagado)
-    const totaPagados= Pagados.reduce((total, pagos)=> {
-      return total + pagos.totalPagado
-    },0)
-    return totaPagados
 
-  }
-  async calcularMontoTotalPagos(cuota:Types.ObjectId):Promise<number>{
+  private async calcularMontoTotalPagos(cuota:Types.ObjectId):Promise<number>{
     const pagos= await this.PagosModel.find({cuotas:new Types.ObjectId(cuota)})
    const total= pagos.reduce((total, pagos)=>{
       return total + pagos.totalPagado
@@ -119,7 +112,7 @@ export class PagosService {
     return total
   }
 
-  async calcularMontoRestantePago(cuota:Types.ObjectId):Promise<number>{
+  private async calcularMontoRestantePago(cuota:Types.ObjectId):Promise<number>{
     const pagos= await this.PagosModel.find({cuotas:new Types.ObjectId(cuota)})
     const pendientes = pagos.filter((pagos)=> pagos.estadoPago === EstadoPago.Pendiente)
     const totalPagosPendientes= pendientes.reduce((total, pagos) =>{
@@ -128,15 +121,15 @@ export class PagosService {
     return totalPagosPendientes
   }
 
-  async cantidadCuotasPorEstado(cuota:Types.ObjectId, estado:EstadoPago){
-    const pagos= await this.PagosModel.find({cuotas:new Types.ObjectId(cuota), estadoPagoP:estado})
+  private async cantidadCuotasPorEstado(cuota:Types.ObjectId, estado:EstadoPago):Promise<number>{ // calcula la cantidad de cuotas por estado
+    const pagos= await this.PagosModel.find({cuotas:new Types.ObjectId(cuota), estadoPago:estado})
     const cantidadPagadas= pagos.length
     return cantidadPagadas
   }
 
-  async cantidadDeCuotas(cuota:Types.ObjectId){
+  private async cantidadDeCuotas(cuota:Types.ObjectId):Promise<number>{//calcula la cantidad de cuotas que veine en el array 
     const pagos= await this.PagosModel.find({cuotas:new Types.ObjectId(cuota)})
-    const cantidadPagos= pagos.length
+    const cantidadPagos= pagos.length    
     return cantidadPagos
   }
 
