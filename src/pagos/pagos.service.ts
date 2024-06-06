@@ -58,11 +58,18 @@ export class PagosService {
       const pagos= await this.PagosModel.find(
         {cuotas:new Types.ObjectId(cuota)}
       ).exec()       
-     const pagosPendientes= this.calcularPagosPorEstado(pagos, EstadoPago.Pendiente)
+     const totalApagar= this.calcularPagosPorEstado(pagos, EstadoPago.Pendiente)
     const pagosPagados= this.calcularPagosPorEstado(pagos, EstadoPago.Pagado)
+        
+    const cuotasPagadas =await  this.cantidadCuotasPorEstado(new Types.ObjectId(cuota), EstadoPago.Pagado)
+    const cuotasPendientes =await  this.cantidadCuotasPorEstado(new Types.ObjectId(cuota), EstadoPago.Pendiente)
+      
       return {
-        pagosPendientes,
+        totalApagar,
+        cuotasPagadas,
+        cuotasPendientes,
         pagosPagados,
+
         pagos
       }
     } catch (error) {
@@ -122,7 +129,7 @@ export class PagosService {
   }
 
   private async cantidadCuotasPorEstado(cuota:Types.ObjectId, estado:EstadoPago):Promise<number>{ // calcula la cantidad de cuotas por estado
-    const pagos= await this.PagosModel.find({cuotas:new Types.ObjectId(cuota), estadoPago:estado})
+    const pagos= await this.PagosModel.find({cuotas:new Types.ObjectId(cuota), estadoPago:estado})  
     const cantidadPagadas= pagos.length
     return cantidadPagadas
   }

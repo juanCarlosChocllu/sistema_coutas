@@ -41,7 +41,7 @@ export class ProductosService {
 
   async  findOne(id: string) {
       try {
-        const producto= await this.ProductoModel.findById(new Types.ObjectId(id)).exec()  
+        const producto= await this.ProductoModel.findById(new Types.ObjectId(id)).exec() 
         if(!producto){
           
           throw new NotFoundException()
