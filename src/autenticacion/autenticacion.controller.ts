@@ -66,7 +66,4 @@ export class AutenticacionController {
   desactivarCuenta(@Param('id') id: string) {
     return this.autenticacionService.desactivarCuenta(id);
   }
-
-
-
 }
