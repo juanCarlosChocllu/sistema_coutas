@@ -92,8 +92,6 @@ export class CuotasService {
         pagina:totalPaginas
       }
     } catch (error) {
-      console.log(error);
-      
        throw new BadRequestException()
     }
   }

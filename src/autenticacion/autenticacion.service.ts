@@ -120,7 +120,7 @@ export class AutenticacionService {
   }
 
 
-  async findOneCliente(id:string){
+  async findOneCliente(id:string):Promise<Usuario>{
    try {
     const cliente= await this.UsuarioModel.findById( new Types.ObjectId(id)).exec()
     if(!cliente){
@@ -139,6 +139,8 @@ export class AutenticacionService {
    return usuarioResponsable
 
  }  
+
+ 
   async update(id: string, updateAutenticacionDto: UpdateAutenticacionDto) {
     
     try {
