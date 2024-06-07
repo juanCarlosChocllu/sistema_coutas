@@ -8,10 +8,6 @@ import { PaginacionDto } from './dto/paginacion.cuotas';
 import { EstadoCuota, Flag } from './enums/enum.cuotas';
 import { Pago} from 'src/pagos/schemas/pago.schema';
 import { EstadoPago } from 'src/pagos/enums/pago.enum';
-import { tokenAutenticacionGuard } from 'src/autenticacion/guards/token.autenticacion.guard';
-import { RolAutenticacionGuard } from 'src/autenticacion/guards/rol.autenticacion.guard';
-import { Roles } from 'src/autenticacion/decorators/roles.decorators';
-import { Rol } from 'src/autenticacion/enums/autenticacion.enum';
 import { calcularMontoPorMes } from './utils/redondear-utils';
 import { desEstructuraFecha } from './utils/des-estructurar-fecha.util';
 
@@ -48,27 +44,8 @@ export class CuotasService {
 
 
 
-  async findAll(paginacionDto:PaginacionDto){
-    const {pagina, limite, buscar}=paginacionDto
-    const paginaNumero =Number(pagina) || 1
-    const limiteNumero =Number(limite)|| 20
-    const totalCuotas= await this.CuotaModel.countDocuments().exec()    
-    const totalPaginas= Math.ceil(totalCuotas / limiteNumero)
-    const cuotas = await this.CuotaModel.find({flag:Flag.Nuevo})
-    .skip((paginaNumero -1 )* limiteNumero)
-    .limit(limiteNumero)
-    .exec()
-    return {
-      data:cuotas,
-      totalPaginas:totalPaginas
-    } ;
-  }
 
 
-
-
-
-  @Roles([Rol.Admin])
   async vericarCuotaCompletada(cuota:Types.ObjectId){      
    const  cuotas = await this.CuotaModel.find({_id:cuota}).exec()
   for (const cuota of cuotas){
@@ -86,7 +63,7 @@ export class CuotasService {
     
   }
 
-  async listarCuotasCliente(usuario:Types.ObjectId, paginacionDto:PaginacionDto){
+  async listarCuotasCliente(usuario:Types.ObjectId, paginacionDto:PaginacionDto){ 
     const {pagina, limite, buscar}= paginacionDto    
     const paginaNumero = Number(pagina) || 1
     const limiteNumero = Number(limite) || 6

@@ -1,14 +1,12 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePagoDto } from './dto/create-pago.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Pago } from './schemas/pago.schema';
 import { Model, Types } from 'mongoose';
 import { EstadoPago } from './enums/pago.enum';
-
 import {CuotasService } from '../cuotas/cuotas.service'
 import { AutenticacionService } from 'src/autenticacion/autenticacion.service';
-import { log } from 'console';
-import { retry } from 'rxjs';
+
 
 @Injectable()
 export class PagosService {
@@ -36,8 +34,7 @@ export class PagosService {
       return cuotasPagadas
   }
 
- async  buscarPagosNoPendientes(idPagos:Types.ObjectId[], cuota:Types.ObjectId){
-;  
+ async  buscarPagosNoPendientes(idPagos:Types.ObjectId[], cuota:Types.ObjectId){ 
   let pagosPendientes =[]
      for(const id of idPagos){       
  
@@ -69,7 +66,6 @@ export class PagosService {
         cuotasPagadas,
         cuotasPendientes,
         pagosPagados,
-
         pagos
       }
     } catch (error) {
