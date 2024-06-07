@@ -111,7 +111,7 @@ export class AutenticacionService {
   }
 
 
-   async findOne(id: string) {
+   async findOne(id: string) { // lista usuarios por diferente rol
     const usuario = await this.UsuarioModel.findById(id).exec()
     if(!usuario){
       throw new NotFoundException()
@@ -120,7 +120,7 @@ export class AutenticacionService {
   }
 
 
-  async findOneCliente(id:string):Promise<Usuario>{
+  async findOneCliente(id:string):Promise<Usuario>{ //lista solo clientes y adminostradores
    try {
     const cliente= await this.UsuarioModel.findById( new Types.ObjectId(id)).exec()
     if(!cliente){

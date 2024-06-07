@@ -20,6 +20,8 @@ export class Pago {
     @Prop({default:0})
     totalPagado:number
 
+    @Prop({default:null})
+    fechaCancelacionPago:Date
 
     @Prop({enum:EstadoPago, default:EstadoPago.Pendiente})
     estadoPago:string

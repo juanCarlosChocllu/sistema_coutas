@@ -27,7 +27,7 @@ export class PagosService {
    for(const cuota of pagosPendientes){
          const cuotaApagar= await this.PagosModel.findByIdAndUpdate({
             _id:cuota._id
-          }, {estadoPago:EstadoPago.Pagado, usuarioResponsablePago:usuario}, {new:true}).exec()     
+          }, {estadoPago:EstadoPago.Pagado, usuarioResponsablePago:usuario, fechaCancelacionPago:Date.now()}, {new:true}).exec()     
          cuotasPagadas = cuotasPagadas.concat(cuotaApagar)
       }    
       this.cuotasService.vericarCuotaCompletada(createPagoDto.cuota)
