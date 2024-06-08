@@ -6,6 +6,8 @@ import { Model, Types } from 'mongoose';
 import { EstadoPago } from './enums/pago.enum';
 import {CuotasService } from '../cuotas/cuotas.service'
 import { AutenticacionService } from 'src/autenticacion/autenticacion.service';
+import { PagoInterface } from './interfaces/pago.interface';
+import { log } from 'console';
 
 
 @Injectable()
@@ -24,28 +26,30 @@ export class PagosService {
    const pagosPendientes=  await this.buscarPagosNoPendientes(createPagoDto.idPago, createPagoDto.cuota)
     const {nombres, apellidos}= await this.autenticacionSerice.buscarUsuarioResposablePago(createPagoDto.usuarioResponsablePago)
     const usuario:string = nombres + ' '+apellidos 
-   for(const cuota of pagosPendientes){
-         const cuotaApagar= await this.PagosModel.findByIdAndUpdate({
-            _id:cuota._id
-          }, {estadoPago:EstadoPago.Pagado, usuarioResponsablePago:usuario, fechaCancelacionPago:Date.now()}, {new:true}).exec()     
+  
+   for(const pago of pagosPendientes){
+        const estadoPagoAdelantado = this.vericarPagoAdelantado(pago)//verifica por mes si el pago es adelantado
+         const cuotaApagar= await this.PagosModel.findByIdAndUpdate({ //acutliza los estadps cuando se manda el id del pago
+            _id:pago._id},
+             {estadoPago:EstadoPago.Pagado, usuarioResponsablePago:usuario, pagoAdelantado:estadoPagoAdelantado, fechaCancelacionPago:Date.now()}, {new:true}).exec()     
          cuotasPagadas = cuotasPagadas.concat(cuotaApagar)
       }    
       this.cuotasService.vericarCuotaCompletada(createPagoDto.cuota)
       return cuotasPagadas
   }
 
- async  buscarPagosNoPendientes(idPagos:Types.ObjectId[], cuota:Types.ObjectId){ 
+
+
+ async  buscarPagosNoPendientes(idPagos:Types.ObjectId[], cuota:Types.ObjectId):Promise<PagoInterface[]>{ 
   let pagosPendientes =[]
      for(const id of idPagos){       
- 
       const pagosPendientesModel= await this.PagosModel.find({
         _id: new Types.ObjectId(id),
         cuotas: new Types.ObjectId(cuota),
         estadoPago:EstadoPago.Pendiente
       }).exec()
     pagosPendientes = pagosPendientes.concat(pagosPendientesModel)
-     }     
-
+     }
     return pagosPendientes
   }
   
@@ -54,7 +58,8 @@ export class PagosService {
     try {
       const pagos= await this.PagosModel.find(
         {cuotas:new Types.ObjectId(cuota)}
-      ).exec()       
+      ).exec()  
+
      const totalApagar= this.calcularPagosPorEstado(pagos, EstadoPago.Pendiente)
     const pagosPagados= this.calcularPagosPorEstado(pagos, EstadoPago.Pagado)
         
@@ -77,7 +82,10 @@ export class PagosService {
     const fecha= new Date()
     const pagos= await this.PagosModel.find(
       {cuotas:new Types.ObjectId(cuota), 
-        fechaPago:{$lte:fecha}
+        $or: [
+          { fechaPago: { $lte: fecha }, pagoAdelantado: false },
+          { pagoAdelantado: true } 
+      ]
       }).sort({numeroDeCuota:-1})
       .limit(6)
       .exec()  
@@ -134,6 +142,14 @@ export class PagosService {
     const pagos= await this.PagosModel.find({cuotas:new Types.ObjectId(cuota)})
     const cantidadPagos= pagos.length    
     return cantidadPagos
+  }
+
+
+  private vericarPagoAdelantado(pago:PagoInterface):Boolean{//verifica fechas de pagos
+    const fechadePagoCuta:Date= new Date(pago.fechaPago)
+    const FechaActual:Date=new Date()
+    const estadoPagoAdelantado:Boolean=( Number(fechadePagoCuta.getMonth()) + 1 > Number(FechaActual.getMonth())+ 1) || ( Number(fechadePagoCuta.getFullYear())  > Number(FechaActual.getFullYear()))
+    return estadoPagoAdelantado
   }
 
 }

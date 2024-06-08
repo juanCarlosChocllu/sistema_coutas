@@ -23,6 +23,9 @@ export class Pago {
     @Prop({default:null})
     fechaCancelacionPago:Date
 
+    @Prop({default:false})
+    pagoAdelantado:Boolean
+
     @Prop({enum:EstadoPago, default:EstadoPago.Pendiente})
     estadoPago:string
     
