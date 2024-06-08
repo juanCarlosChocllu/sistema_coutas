@@ -79,8 +79,8 @@ export class PagosService {
   }
 
   async listarPagosClientePorMes(cuota:Types.ObjectId){
-    const fecha= new Date()
-    const pagos= await this.PagosModel.find(
+    const fecha:Date= new Date()
+    const pagos:Pago[]= await this.PagosModel.find(
       {cuotas:new Types.ObjectId(cuota), 
         $or: [
           { fechaPago: { $lte: fecha }, pagoAdelantado: false },
