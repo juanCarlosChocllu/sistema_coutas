@@ -7,8 +7,6 @@ import { EstadoPago } from './enums/pago.enum';
 import {CuotasService } from '../cuotas/cuotas.service'
 import { AutenticacionService } from 'src/autenticacion/autenticacion.service';
 import { PagoInterface } from './interfaces/pago.interface';
-import { log } from 'console';
-
 
 @Injectable()
 export class PagosService {

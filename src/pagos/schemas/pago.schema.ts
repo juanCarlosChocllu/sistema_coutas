@@ -7,7 +7,6 @@ export class Pago {
 
     @Prop({type: Types.ObjectId, ref:'Cuotas'})
     cuotas:Types.ObjectId
-    
     @Prop({ ref:'Usuario'})
     usuarioResponsablePago:string
 
