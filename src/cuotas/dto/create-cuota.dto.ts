@@ -1,4 +1,4 @@
-import { IsDate, IsDateString, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator"
+import { IsDate, IsDateString, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator"
 import { Types } from "mongoose"
 
 export class CreateCuotaDto {
@@ -16,6 +16,7 @@ export class CreateCuotaDto {
 
     @IsNotEmpty({message:'Este campo es obligatorio'})
     @IsInt({message:'Ingrese numeros enteros'})
+    @IsPositive({message:'Ingrese un cantidad positiva'})
     cantidadCuotas:number
     
     @IsNotEmpty({message:'Este campo es obligatorio'})
