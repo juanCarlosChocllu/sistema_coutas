@@ -1,5 +1,5 @@
 
-import {IsString, IsNotEmpty, IsNumber} from "class-validator"
+import {IsString, IsNotEmpty, IsNumber, IsPositive} from "class-validator"
 
 export class CreateProductoDto {
 
@@ -9,6 +9,7 @@ export class CreateProductoDto {
 
     @IsNumber({},{message:'Este campo es numerico'})
     @IsNotEmpty({message:'Este campo es obligatorio'})
+    @IsPositive({message:'Ingrese un cantidad positiva'})
     precio:Number
     
     @IsNotEmpty({message:'Este campo es obligatorio'})
