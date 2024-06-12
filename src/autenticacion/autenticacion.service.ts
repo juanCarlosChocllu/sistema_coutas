@@ -63,7 +63,7 @@ export class AutenticacionService {
   async findAllClientes(paginacionDto:PaginacionDto) {
     const {pagina, limite, buscar}=paginacionDto
     const paginaNumero= Number(pagina) || 1
-    const limiteNumero= Number(limite) || 20
+    const limiteNumero= Number(limite) || 10
 
     const filtrador:any={rol:Rol.cliente, is_active:IsActive.Activo, flag:Flag.Nuevo}
     if(buscar){

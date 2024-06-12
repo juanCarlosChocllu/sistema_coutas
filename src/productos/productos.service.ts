@@ -19,7 +19,7 @@ export class ProductosService {
   async findAll(paginacionDto:PaginacionDto) {
     const {pagina, limite, buscar}= paginacionDto
     const paginaNumber= Number(pagina) || 1
-    const limiteNumber = Number(limite) || 20
+    const limiteNumber = Number(limite) || 10
     const filtrador:any={flag:Flag.Nuevo}
     if(buscar){
       filtrador.$or=[
