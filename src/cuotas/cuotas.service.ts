@@ -1,6 +1,5 @@
-import { BadRequestException, HttpStatus, Injectable, NotFoundException, UseGuards } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, NotFoundException, RequestTimeoutException, UseGuards } from '@nestjs/common';
 import { CreateCuotaDto } from './dto/create-cuota.dto';
-import { UpdateCuotaDto } from './dto/update-cuota.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cuota } from './schemas/cuota.schema';
 import { Model, Types } from 'mongoose';
@@ -10,6 +9,7 @@ import { Pago} from 'src/pagos/schemas/pago.schema';
 import { EstadoPago } from 'src/pagos/enums/pago.enum';
 import { calcularMontoPorMes } from './utils/redondear-utils';
 import { desEstructuraFecha } from './utils/des-estructurar-fecha.util';
+import { throwIfEmpty } from 'rxjs';
 
 @Injectable()
 export class CuotasService {
@@ -94,5 +94,19 @@ export class CuotasService {
     } catch (error) {
        throw new BadRequestException()
     }
+  }
+
+
+
+  async contarTodasLasCuotas(){ //cuenta todas las cuotas existentes
+    const cuotas = await this.CuotaModel.countDocuments({flag:Flag.Nuevo})
+    return cuotas 
+     
+  }
+
+
+  async cuotasPagasCompletadas(){
+    const cuota = await this.CuotaModel.find({flag:Flag.Nuevo, estadoCouta:EstadoCuota.Pagado}).exec()
+  return cuota
   }
 }

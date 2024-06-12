@@ -82,4 +82,10 @@ export class ProductosService {
         throw new NotFoundException()
      }
   }
+
+
+  async contarproductosTotal(){ // saca el total de todos los productos nuevos
+    const productos= await this.ProductoModel.countDocuments({flag:Flag.Nuevo})
+    return productos
+  }
 }

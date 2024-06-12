@@ -18,7 +18,9 @@ export class ProductosController {
   @Roles([Rol.Admin])
   @Post('create')
   async create(@Body() createProductoDto: CreateProductoDto) {
+        
     return await this.productosService.create(createProductoDto);
+
   }
 
   @Roles([Rol.Admin])

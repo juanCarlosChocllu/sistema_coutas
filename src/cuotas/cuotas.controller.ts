@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, BadRequestException, UseGuards } from '@nestjs/common';
 import { CuotasService } from './cuotas.service';
 import { CreateCuotaDto } from './dto/create-cuota.dto';
-import { UpdateCuotaDto } from './dto/update-cuota.dto';
 import { Types } from 'mongoose';
 import { PaginacionDto } from './dto/paginacion.cuotas';
 import { ApiTags } from '@nestjs/swagger';
@@ -9,9 +8,6 @@ import { tokenAutenticacionGuard } from 'src/autenticacion/guards/token.autentic
 import { RolAutenticacionGuard } from 'src/autenticacion/guards/rol.autenticacion.guard';
 import { Roles } from 'src/autenticacion/decorators/roles.decorators';
 import { Rol } from 'src/autenticacion/enums/autenticacion.enum';
-import { Usuario } from 'src/autenticacion/schemas/autenticacion.schema';
-import { Cuota } from './schemas/cuota.schema';
-import { query } from 'express';
 
 @ApiTags('cuotas')
 @UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)

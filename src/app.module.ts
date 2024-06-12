@@ -7,7 +7,7 @@ import { PagosModule } from './pagos/pagos.module';
 import { GastosModule } from './gastos/gastos.module';
 import { ConfigModule } from '@nestjs/config';
 import { coneccionMongo } from './config/coneccion-db';
-
+import { EstadisticaModule } from './estadistica/estadistica.module';
 
 
 @Module({
@@ -18,7 +18,8 @@ import { coneccionMongo } from './config/coneccion-db';
    ProductosModule,
    CuotasModule,
    PagosModule,
-   GastosModule],
+   GastosModule,
+   EstadisticaModule,],
   controllers: [],
   providers: [],
 })

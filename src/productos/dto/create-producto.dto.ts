@@ -1,5 +1,5 @@
 
-import {IsString, IsNotEmpty, IsNumber, IsPositive} from "class-validator"
+import {IsString, IsNotEmpty,  IsPositive, IsNumber } from "class-validator"
 
 export class CreateProductoDto {
 

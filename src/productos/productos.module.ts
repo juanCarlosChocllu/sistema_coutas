@@ -14,5 +14,6 @@ import { AutenticacionModule } from 'src/autenticacion/autenticacion.module';
       ), AutenticacionModule],
   controllers: [ProductosController],
   providers: [ProductosService],
+  exports:[ProductosService]
 })
 export class ProductosModule {}

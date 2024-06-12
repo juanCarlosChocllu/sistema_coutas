@@ -188,4 +188,11 @@ export class AutenticacionService {
     throw new NotFoundException() 
   }
   }
+
+
+  async contarTotalClientes(){
+    const clientes = await this.UsuarioModel.countDocuments({flag:Flag.Nuevo, rol:Rol.cliente})
+    return clientes
+  }
+
 }
