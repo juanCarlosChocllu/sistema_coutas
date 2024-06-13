@@ -63,40 +63,87 @@ export class CuotasService {
     
   }
 
-  async listarCuotasCliente(usuario:Types.ObjectId, paginacionDto:PaginacionDto){ 
-    const {pagina, limite, buscar}= paginacionDto    
-    const paginaNumero = Number(pagina) || 1
-    const limiteNumero = Number(limite) || 6
-    const filtrador:any={usuario:new Types.ObjectId(usuario)}
-    if(buscar){
-      if (buscar) {
-        const [año, mes, dia] = buscar.split('-');
+  async listarCuotasCliente(usuario: Types.ObjectId, paginacionDto: PaginacionDto) { 
+    const { pagina, limite, buscar , fechaBusqueda} = paginacionDto;    
+    const paginaNumero = Number(pagina) || 1;
+    const limiteNumero = Number(limite) || 6;
+    const filtrador: any = { usuario: new Types.ObjectId(usuario) };
+    
+    try {
+      if (fechaBusqueda) {
+        const [año, mes, dia] = fechaBusqueda.split('-');
         const fechaInicio = new Date(parseInt(año), parseInt(mes) - 1, parseInt(dia));
         const fechaFin = new Date(parseInt(año), parseInt(mes) - 1, parseInt(dia) + 1);
+    
         filtrador.createdAt = {
-            $gte: fechaInicio,
-            $lt: fechaFin
-        };
-    }
-    }
-    try {
-      const totalCuotas= await this.CuotaModel.countDocuments().exec() 
-      const totalPaginas= Math.ceil(totalCuotas / limiteNumero)  
-      const cuotas= await this.CuotaModel.find(filtrador)
-      .skip((paginaNumero -1 )* limiteNumero)
-      .limit(limiteNumero)
-      .exec()
+          $gte: fechaInicio,
+          $lt: fechaFin
+        };      
+      }
       
+     let cuotas;
+      if (buscar) {
+      
+         cuotas = await this.CuotaModel.aggregate([
+          {
+            $lookup: {
+              from: "productos",
+              localField: "producto",
+              foreignField: "_id",
+              as: "producto"
+            }
+          },
+          {
+            $match: {
+              ...filtrador,
+              "producto.nombreProducto": { $regex: new RegExp(buscar, "i") }
+            }
+          },
+          {
+            $skip: (paginaNumero - 1) * limiteNumero
+          },
+          {
+            $limit: limiteNumero
+          }
+        ]);
+ 
+               
+      } else {
+        console.log(filtrador);
+        
+        cuotas = await this.CuotaModel.aggregate([
+          {
+            $lookup: {
+              from: "productos",
+              localField: "producto",
+              foreignField: "_id",
+              as: "producto"
+            }
+          },
+          {
+            $match: filtrador
+          },
+          {
+            $skip: (paginaNumero - 1) * limiteNumero
+          },
+          {
+            $limit: limiteNumero
+          }
+        ]);
+      }
+  
+      const totalCuotas = await this.CuotaModel.countDocuments(filtrador).exec();
+      const totalPaginas = Math.ceil(totalCuotas / limiteNumero);
+  
       return {
         cuotas,
-        pagina:totalPaginas
-      }
+        pagina: totalPaginas
+      };
     } catch (error) {
-       throw new BadRequestException()
+      throw new BadRequestException();
     }
   }
-
-
+  
 
   async contarTodasLasCuotas(){ //cuenta todas las cuotas existentes
     const cuotas = await this.CuotaModel.countDocuments({flag:Flag.Nuevo})
@@ -108,5 +155,10 @@ export class CuotasService {
   async cuotasPagasCompletadas(){
     const cuota = await this.CuotaModel.find({flag:Flag.Nuevo, estadoCouta:EstadoCuota.Pagado}).exec()
   return cuota
+  }
+
+
+  private buscarCuotasPorNombreDeProductos(){
+    
   }
 }

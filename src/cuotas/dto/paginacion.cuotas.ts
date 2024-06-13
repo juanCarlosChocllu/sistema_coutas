@@ -1,5 +1,5 @@
 
-import {IsString, IsOptional} from 'class-validator'
+import {IsString, IsOptional, IsDateString} from 'class-validator'
 
 export class PaginacionDto{
     @IsOptional()
@@ -13,5 +13,12 @@ export class PaginacionDto{
     @IsOptional()
     @IsString()
     buscar:string
+
+
+    @IsOptional()
+    @IsDateString()
+    fechaBusqueda:string
+
+
 
 }

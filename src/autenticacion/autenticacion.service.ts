@@ -52,7 +52,7 @@ export class AutenticacionService {
        const token = this.jwtService.sign({id:usuario._id})
       const  resultado={
         success:true,
-        data:{rol:usuario.rol, nombre:usuario.nombres , apellidos: usuario.apellidos},
+        data:{rol:usuario.rol, nombre:usuario.nombres , id:usuario._id , apellidos: usuario.apellidos},
         token: token
     }
     return resultado
