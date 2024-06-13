@@ -9,7 +9,6 @@ import { Pago} from 'src/pagos/schemas/pago.schema';
 import { EstadoPago } from 'src/pagos/enums/pago.enum';
 import { calcularMontoPorMes } from './utils/redondear-utils';
 import { desEstructuraFecha } from './utils/des-estructurar-fecha.util';
-import { throwIfEmpty } from 'rxjs';
 
 @Injectable()
 export class CuotasService {
