@@ -40,7 +40,7 @@ export class AutenticacionController {
     return await this.autenticacionService.findAllAdministradores(paginacionDto);
   }
   @UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
-  @Roles([Rol.Admin])
+  @Roles([Rol.Admin, Rol.Admin])
   @Get('cliente/:id')
   async findOne(@Param('id') id: string) {
     return await this.autenticacionService.findOneCliente(id)

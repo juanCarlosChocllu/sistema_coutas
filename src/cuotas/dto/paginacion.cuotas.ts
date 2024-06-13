@@ -12,7 +12,7 @@ export class PaginacionDto{
 
     @IsOptional()
     @IsString()
-    buscar:string
+    producto:string
 
 
     @IsOptional()

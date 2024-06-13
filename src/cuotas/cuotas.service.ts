@@ -64,7 +64,8 @@ export class CuotasService {
   }
 
   async listarCuotasCliente(usuario: Types.ObjectId, paginacionDto: PaginacionDto) { 
-    const { pagina, limite, buscar , fechaBusqueda} = paginacionDto;    
+    const { pagina, limite, producto, fechaBusqueda} = paginacionDto;
+    let cuotas:string[];//se le asipna los resultados por porducto o popr fecha    
     const paginaNumero = Number(pagina) || 1;
     const limiteNumero = Number(limite) || 6;
     const filtrador: any = { usuario: new Types.ObjectId(usuario) };
@@ -74,64 +75,16 @@ export class CuotasService {
         const [año, mes, dia] = fechaBusqueda.split('-');
         const fechaInicio = new Date(parseInt(año), parseInt(mes) - 1, parseInt(dia));
         const fechaFin = new Date(parseInt(año), parseInt(mes) - 1, parseInt(dia) + 1);
-    
         filtrador.createdAt = {
           $gte: fechaInicio,
           $lt: fechaFin
         };      
       }
-      
-     let cuotas;
-      if (buscar) {
-      
-         cuotas = await this.CuotaModel.aggregate([
-          {
-            $lookup: {
-              from: "productos",
-              localField: "producto",
-              foreignField: "_id",
-              as: "producto"
-            }
-          },
-          {
-            $match: {
-              ...filtrador,
-              "producto.nombreProducto": { $regex: new RegExp(buscar, "i") }
-            }
-          },
-          {
-            $skip: (paginaNumero - 1) * limiteNumero
-          },
-          {
-            $limit: limiteNumero
-          }
-        ]);
- 
-               
+      if (producto) {
+        cuotas = await this.buscarCuotasPorNombreDeProductos(paginaNumero, limiteNumero, producto)    
       } else {
-        console.log(filtrador);
-        
-        cuotas = await this.CuotaModel.aggregate([
-          {
-            $lookup: {
-              from: "productos",
-              localField: "producto",
-              foreignField: "_id",
-              as: "producto"
-            }
-          },
-          {
-            $match: filtrador
-          },
-          {
-            $skip: (paginaNumero - 1) * limiteNumero
-          },
-          {
-            $limit: limiteNumero
-          }
-        ]);
+        cuotas = await this.buscarCuotasPorFechaOusuario(filtrador, paginaNumero, limiteNumero)
       }
-  
       const totalCuotas = await this.CuotaModel.countDocuments(filtrador).exec();
       const totalPaginas = Math.ceil(totalCuotas / limiteNumero);
   
@@ -157,8 +110,53 @@ export class CuotasService {
   return cuota
   }
 
+  private async buscarCuotasPorNombreDeProductos( paginaNumero:number, limiteNumero:number, producto:string){
+  const  cuotas = await this.CuotaModel.aggregate([
+      {
+        $lookup: {
+          from: "productos",
+          localField: "producto",
+          foreignField: "_id",
+          as: "producto"
+        }
+      },
+      {
+        $match: {
+        
+          "producto.nombreProducto": { $regex: new RegExp(producto, "i") }
+        }
+      },
+      {
+        $skip: (paginaNumero - 1) * limiteNumero
+      },
+      {
+        $limit: limiteNumero
+      }
+    ]);
+    return cuotas 
+  }
 
-  private buscarCuotasPorNombreDeProductos(){
-    
+  private async buscarCuotasPorFechaOusuario( filtrador:{}, paginaNumero:number, limiteNumero:number){//muestra las cuotas por usuario o por  fecha
+   const cuotas = await this.CuotaModel.aggregate([
+      {
+        $lookup: {
+          from: "productos",
+          localField: "producto",
+          foreignField: "_id",
+          as: "producto"
+        }
+      },
+      {
+        $match: filtrador
+      },
+      {
+        $skip: (paginaNumero - 1) * limiteNumero
+      },
+      {
+        $limit: limiteNumero
+      }
+    ]);
+
+    return cuotas
   }
 }
