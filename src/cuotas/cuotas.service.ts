@@ -79,7 +79,7 @@ export class CuotasService {
           $lt: fechaFin
         };      
       }
-      if (producto) {
+      if (producto) {//si mandar la buscade por el nomnbre de producto busca
         cuotas = await this.buscarCuotasPorNombreDeProductos(paginaNumero, limiteNumero, producto)    
       } else {
         cuotas = await this.buscarCuotasPorFechaOusuario(filtrador, paginaNumero, limiteNumero)
