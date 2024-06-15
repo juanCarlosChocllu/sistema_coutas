@@ -19,7 +19,7 @@ export class PagosController {
   constructor(private readonly pagosService: PagosService) {}
 
 
-  @Roles([Rol.Admin])
+  @Roles([Rol.Admin, Rol.cliente])
   @Post('create/:idcuota')
   async createPago(@Body() createPagoDto: CreatePagoDto,@Param('idcuota') Cuota:string,  @Req() request:Request<Express.Application>) {
    try { 
