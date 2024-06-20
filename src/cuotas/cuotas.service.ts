@@ -18,7 +18,7 @@ export class CuotasService {
   
   ){}
 
- async create(createCuotaDto: CreateCuotaDto) {  
+ async create(createCuotaDto: CreateCuotaDto) {    
   createCuotaDto.montoPagar=  calcularMontoPorMes(createCuotaDto.montoTotal, createCuotaDto.cantidadCuotas)
   const totalDecimal=  multplicarDecimales(createCuotaDto.montoPagar , createCuotaDto.cantidadCuotas)
   const montoApagarEntero= desEstructurarMontoApagarPorCuota(createCuotaDto.montoPagar)
@@ -29,6 +29,8 @@ export class CuotasService {
     const fechaVencimiento = new Date(año, mes, dia);
     fechaVencimiento.setMonth(fechaVencimiento.getMonth() + contador);
     const totalPagado = contador === 0 ? montoApagarEntero + totalDecimal :montoApagarEntero;
+   
+    
     const pagos = await this.PagosMoldel.create({
         cuotas: cuota._id,
         fechaPago: fechaVencimiento.toDateString(),

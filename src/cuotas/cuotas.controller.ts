@@ -10,12 +10,12 @@ import { Roles } from 'src/autenticacion/decorators/roles.decorators';
 import { Rol } from 'src/autenticacion/enums/autenticacion.enum';
 
 @ApiTags('cuotas')
-@UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
+//@UseGuards(tokenAutenticacionGuard, RolAutenticacionGuard)
 @Controller('cuotas')
 export class CuotasController {
   constructor(private readonly cuotasService: CuotasService) {}
 
-  @Roles([Rol.Admin])
+ // @Roles([Rol.Admin])
   @Post('create/:idUsuario/:idProdcuto')
   create( @Param ('idUsuario') idUsuario:string , @Param('idProdcuto') idProdcuto:string , @Body()  createCuotaDto: CreateCuotaDto) {
     try {
