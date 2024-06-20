@@ -7,7 +7,7 @@ import { PaginacionDto } from './dto/paginacion.cuotas';
 import { EstadoCuota, Flag } from './enums/enum.cuotas';
 import { Pago} from 'src/pagos/schemas/pago.schema';
 import { EstadoPago } from 'src/pagos/enums/pago.enum';
-import { calcularMontoPorMes } from './utils/redondear-utils';
+import { calcularMontoPorMes ,multplicarDecimales,desEstructurarMontoApagarPorCuota} from './utils/calcularPreciosPorMes';
 import { desEstructuraFecha } from './utils/des-estructurar-fecha.util';
 
 @Injectable()
@@ -18,25 +18,26 @@ export class CuotasService {
   
   ){}
 
-
- async create(createCuotaDto: CreateCuotaDto) {
+ async create(createCuotaDto: CreateCuotaDto) {  
   createCuotaDto.montoPagar=  calcularMontoPorMes(createCuotaDto.montoTotal, createCuotaDto.cantidadCuotas)
+  const totalDecimal=  multplicarDecimales(createCuotaDto.montoPagar , createCuotaDto.cantidadCuotas)
+  const montoApagarEntero= desEstructurarMontoApagarPorCuota(createCuotaDto.montoPagar)
   const cuota= await this.CuotaModel.create(createCuotaDto)
    await cuota.save()  
   const [año, mes, dia] = desEstructuraFecha(createCuotaDto.fechaDePago)  
-   for(let contador =0; contador < createCuotaDto.cantidadCuotas; contador ++ ){    
-      const fechaVencimiento = new Date(año, mes, dia);
-      fechaVencimiento.setMonth(fechaVencimiento.getMonth() + contador)
-      const pagos= await this.PagosMoldel.create({
-      cuotas:cuota._id,
-      fechaPago: fechaVencimiento.toDateString(),
-      totalPagado: cuota.montoPagar,
-      numeroDeCuota:contador + 1
-    }
-    )
-    await pagos.save()
-   }
+  for (let contador = 0; contador < createCuotaDto.cantidadCuotas; contador++) {
+    const fechaVencimiento = new Date(año, mes, dia);
+    fechaVencimiento.setMonth(fechaVencimiento.getMonth() + contador);
+    const totalPagado = contador === 0 ? montoApagarEntero + totalDecimal :montoApagarEntero;
+    const pagos = await this.PagosMoldel.create({
+        cuotas: cuota._id,
+        fechaPago: fechaVencimiento.toDateString(),
+        totalPagado: totalPagado,
+        numeroDeCuota: contador + 1
+    });
 
+    await pagos.save();
+    }
     return  HttpStatus.CREATED ;
   }
 
